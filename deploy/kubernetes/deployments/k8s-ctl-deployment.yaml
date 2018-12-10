@@ -1,0 +1,22 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: fushigi
+    run: controller
+  name: fushigi-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fushigi
+      run: controller
+  template:
+    metadata:
+      labels:
+        app: fushigi
+        run: controller
+    spec:
+      containers:
+      - image: kurai/fushigi/controller
+        name: controller
