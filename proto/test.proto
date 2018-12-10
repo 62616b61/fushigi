@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+service DataService {
+  rpc getData () returns (Data) {}
+}
+
+message Data {
+  int32 id = 1;
+  string name = 2;
+}
