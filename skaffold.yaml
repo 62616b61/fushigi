@@ -1,0 +1,12 @@
+apiVersion: skaffold/v1beta1
+kind: Config
+build:
+  artifacts:
+  - image: kurai/fushigi/gateway
+    context: ./matchmaking-gateway/
+    sync:
+      '*.js': .
+deploy:
+  kubectl:
+    manifests:
+    - ./deploy/kubernetes/*
