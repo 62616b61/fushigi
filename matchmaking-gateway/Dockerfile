@@ -1,8 +1,11 @@
-# Stage 1 - build process
-FROM node:9.4.0-alpine
+FROM node:11-alpine
 
+RUN mkdir -p /app
 WORKDIR /app
-COPY . .
 
-RUN npm install
+COPY package.json package-lock.json /app/
+RUN npm install --production
+
+COPY . /app
+
 CMD npm start
