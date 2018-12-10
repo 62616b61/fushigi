@@ -6,6 +6,11 @@ build:
     context: ./matchmaking-gateway/
     sync:
       '*.js': .
+
+  - image: kurai/fushigi/controller
+    context: ./kubernetes-controller/
+    sync:
+      '*.js': .
 deploy:
   kubectl:
     manifests:
