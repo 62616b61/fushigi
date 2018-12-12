@@ -17,7 +17,7 @@ function getData(call, callback) {
 
 var server = new grpc.Server();
 server.addService(dataProto.DataService.service, {getData: getData});
-server.bind('0.0.0.0:8080', grpc.ServerCredentials.createInsecure());
+server.bind('0.0.0.0:3000', grpc.ServerCredentials.createInsecure());
 server.start();
 
 console.log('grpc server is running');
