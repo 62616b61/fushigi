@@ -1,14 +1,12 @@
-const WebSocket = require('ws');
+var PROTO_PATH = __dirname + '/../proto/test.proto';
 
-const wss = new WebSocket.Server({ port: 8080 });
+var grpc = require('grpc');
+var protoLoader = require('@grpc/proto-loader');
+var packageDefinition = protoLoader.loadSync(PROTO_PATH);
+var dataProto = grpc.loadPackageDefinition(packageDefinition).main;
 
-console.log('Started server')
+const client = new dataProto.DataService('localhost:8080', grpc.credentials.createInsecure());
 
-wss.on('connection', function connection(ws) {
-  console.log('new connection')
-  ws.on('message', function incoming(message) {
-    console.log('received: %s', message);
-  });
- 
-  ws.send('something');
+client.getData({}, (err, response) => {
+  console.log('getData:', response, err)
 });
