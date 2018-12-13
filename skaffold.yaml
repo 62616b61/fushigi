@@ -7,8 +7,8 @@ build:
     sync:
       '*.js': .
 
-  - image: kurai/fushigi/controller
-    context: ./controller/
+  - image: kurai/fushigi/scheduler
+    context: ./scheduler/
     sync:
       '*.js': .
 deploy:

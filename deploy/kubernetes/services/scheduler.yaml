@@ -3,13 +3,13 @@ kind: Service
 metadata:
   labels:
     app: fushigi
-    run: controller
-  name: controller
+    run: scheduler
+  name: scheduler
 spec:
   type: ClusterIP
   selector:
     app: fushigi
-    run: controller
+    run: scheduler
   ports:
   - name: http
     protocol: TCP

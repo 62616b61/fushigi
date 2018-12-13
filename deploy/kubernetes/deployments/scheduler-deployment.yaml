@@ -3,20 +3,20 @@ kind: Deployment
 metadata:
   labels:
     app: fushigi
-    run: controller
-  name: fushigi-controller
+    run: scheduler
+  name: fushigi-scheduler
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: fushigi
-      run: controller
+      run: scheduler
   template:
     metadata:
       labels:
         app: fushigi
-        run: controller
+        run: scheduler
     spec:
       containers:
-      - image: kurai/fushigi/controller
-        name: controller
+      - image: kurai/fushigi/scheduler
+        name: scheduler
