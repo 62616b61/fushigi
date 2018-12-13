@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package scheduler;
+
+service Scheduler {
+  rpc SpawnGameRunner (SpawnGameRunnerRequest) returns (SpawnGameRunnerResponse) {}
+}
+
+message Player {
+  string id = 1;
+}
+
+message SpawnGameRunnerRequest {
+  Player player1 = 1;
+  Player player2 = 2;
+}
+
+message SpawnGameRunnerResponse {
+  string url = 1;
+}

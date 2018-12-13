@@ -1,19 +1,13 @@
-const grpc = require('grpc');
-const protoLoader = require('@grpc/proto-loader');
+const { scheduler } = require('./grpc/client');
 
-const PROTO_PATH = __dirname + '/../proto/test.proto';
-const packageDefinition = protoLoader.loadSync(PROTO_PATH);
-const dataProto = grpc.loadPackageDefinition(packageDefinition).main;
+setTimeout(() => {
+  const player1 = { id: 1 };
+  const player2 = { id: 2 };
 
-const controllerHost = process.env.CONTROLLER_SERVICE_HOST;
-const controllerPort = process.env.CONTROLLER_SERVICE_PORT;
-const controllerUrl = `${controllerHost}:${controllerPort}`;
-
-const client = new dataProto.DataService(controllerUrl, grpc.credentials.createInsecure());
-
-client.getData({}, (err, response) => {
-  console.log('getData:', response, err)
-});
+  scheduler.SpawnGameRunner({player1, player2}, (err, response) => {
+    console.log('Spawning Game Runner:', response, err);
+  });
+}, 1000);
 
 // dont die
 setInterval(() => {}, 100000);
