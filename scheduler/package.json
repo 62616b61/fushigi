@@ -1,5 +1,5 @@
 {
-  "name": "fushigi-kubernetes-controller",
+  "name": "fushigi-scheduler",
   "version": "0.0.0",
   "description": "",
   "main": "src/index.js",
