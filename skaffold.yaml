@@ -3,12 +3,12 @@ kind: Config
 build:
   artifacts:
   - image: kurai/fushigi/gateway
-    context: ./matchmaking-gateway/
+    context: ./gateway/
     sync:
       '*.js': .
 
   - image: kurai/fushigi/controller
-    context: ./kubernetes-controller/
+    context: ./controller/
     sync:
       '*.js': .
 deploy:
