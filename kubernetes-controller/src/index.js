@@ -1,9 +1,9 @@
-var PROTO_PATH = __dirname + '/../proto/test.proto';
+const grpc = require('grpc');
+const protoLoader = require('@grpc/proto-loader');
 
-var grpc = require('grpc');
-var protoLoader = require('@grpc/proto-loader');
-var packageDefinition = protoLoader.loadSync(PROTO_PATH);
-var dataProto = grpc.loadPackageDefinition(packageDefinition).main;
+const PROTO_PATH = __dirname + '/../proto/test.proto';
+const packageDefinition = protoLoader.loadSync(PROTO_PATH);
+const dataProto = grpc.loadPackageDefinition(packageDefinition).main;
 
 function getData(call, callback) {
   callback(
