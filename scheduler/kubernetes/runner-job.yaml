@@ -2,6 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: nginx
+  namespace: fushigi
   labels:
     app: fushigi
     run: runner
@@ -17,4 +18,3 @@ spec:
       containers:
       - image: nginx
         name: nginx
-        resources: {}

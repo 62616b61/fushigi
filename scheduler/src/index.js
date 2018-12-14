@@ -16,15 +16,20 @@ function prepareRunnerJob(jobTemplate, id) {
   job.metadata.name += `-${id}`.toLowerCase();
   job.metadata.labels.runner = id;
   job.spec.template.metadata.runner = id;
+
+  console.log('Job manifest', JSON.stringify(job, null, 2));
   
   return job;
 }
 
-(async () => {
+setTimeout((async () => {
   const client = new Client({ config: config.getInCluster() })
 
   await client.loadSpec()
 
   const jobDefinition = prepareRunnerJob(job, id);
-  await client.apis.batch.v1.namespaces('default').jobs.post({ body: jobDefinition })
-})();
+  const result = await client.apis.batch.v1.namespaces('fushigi').jobs.post({ body: jobDefinition })
+
+
+  console.log('RESULT', result)
+}), 5000);
