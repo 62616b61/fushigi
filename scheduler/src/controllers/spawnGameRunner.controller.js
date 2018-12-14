@@ -1,4 +1,4 @@
-function spawnGameRunner(call, callback) {
+async function spawnGameRunner(call, callback) {
   callback(
     null,
     {

@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nginx
+  labels:
+    app: fushigi
+    run: runner
+    runner: PUT_RUNNER_ID_HERE
+spec:
+  template:
+    metadata:
+      app: fushigi
+      run: runner
+      runner: PUT_RUNNER_ID_HERE
+    spec:
+      restartPolicy: Never
+      containers:
+      - image: nginx
+        name: nginx
+        resources: {}
