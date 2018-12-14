@@ -1,10 +1,11 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
+  name: fushigi-gateway
+  namespace: fushigi
   labels:
     app: fushigi
     run: gateway
-  name: fushigi-gateway
 spec:
   replicas: 1
   selector:

@@ -1,10 +1,11 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
+  name: fushigi-scheduler
+  namespace: fushigi
   labels:
     app: fushigi
     run: scheduler
-  name: fushigi-scheduler
 spec:
   replicas: 1
   selector:
@@ -17,6 +18,7 @@ spec:
         app: fushigi
         run: scheduler
     spec:
+      serviceAccountName: fushigi-scheduler-sa
       containers:
       - image: kurai/fushigi/scheduler
         name: scheduler
