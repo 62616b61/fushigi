@@ -1,7 +1,7 @@
 
 const grpc = require('grpc');
 const protoLoader = require('@grpc/proto-loader');
-const spawnGameRunner = require('../controllers/spawnGameRunner.controller');
+const spawnGameRunner = require('./controllers/spawnGameRunner.controller');
 
 const PROTO_PATH = __dirname + '/../../proto/scheduler.proto';
 const packageDefinition = protoLoader.loadSync(PROTO_PATH);
