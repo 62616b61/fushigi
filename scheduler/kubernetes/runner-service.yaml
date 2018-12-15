@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fushigi-runner
+  namespace: fushigi
+  labels:
+    app: fushigi
+    run: runner
+    runner: PUT_RUNNER_ID_HERE
+spec:
+  type: ClusterIP
+  selector:
+    app: fushigi
+    run: runner
+    runner: PUT_RUNNER_ID_HERE
+  ports:
+  - name: grpc
+    port: 3000
+    targetPort: 3000

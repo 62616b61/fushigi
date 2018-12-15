@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: nginx
+  name: fushigi-runner
   namespace: fushigi
   labels:
     app: fushigi
@@ -16,5 +16,6 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-      - image: nginx
-        name: nginx
+      - image: kurai/fushigi/runner
+        name: runner
+        imagePullPolicy: IfNotPresent
