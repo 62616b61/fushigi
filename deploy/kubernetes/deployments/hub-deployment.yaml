@@ -1,23 +1,23 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: gateway
+  name: hub
   namespace: fushigi
   labels:
     app: fushigi
-    run: gateway
+    run: hub
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: fushigi
-      run: gateway
+      run: hub
   template:
     metadata:
       labels:
         app: fushigi
-        run: gateway
+        run: hub
     spec:
       containers:
-      - image: kurai/fushigi/gateway
-        name: gateway
+      - image: kurai/fushigi/hub
+        name: hub

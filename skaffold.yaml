@@ -2,8 +2,8 @@ apiVersion: skaffold/v1beta1
 kind: Config
 build:
   artifacts:
-  - image: kurai/fushigi/gateway
-    context: ./gateway/
+  - image: kurai/fushigi/hub
+    context: ./hub/
     sync:
       '*.js': .
 
