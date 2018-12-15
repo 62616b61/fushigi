@@ -7,7 +7,7 @@ setTimeout(() => {
   scheduler.SpawnGameRunner({player1, player2}, (err, response) => {
     console.log('Spawning Game Runner:', response, err);
   });
-}, 1000);
+}, 5000);
 
 // dont die
 setInterval(() => {}, 100000);
