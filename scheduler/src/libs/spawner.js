@@ -14,8 +14,6 @@ function prepareRunnerService(id) {
   service.metadata.labels.runner = id;
   service.spec.selector.runner = id;
 
-  console.log('SERVICE MANIFEST', service);
-
   return service;
 }
 
