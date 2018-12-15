@@ -44,14 +44,15 @@ async function spawnRunner() {
   await client.loadSpec();
 
   const id = uuid.generate();
+
   const jobDefinition = prepareRunnerJob(id);
   const serviceDefinition = prepareRunnerService(id);
-  const VirtualServiceDefinition = prepareRunnerVirtualService(id);
+  const virtualServiceDefinition = prepareRunnerVirtualService(id);
 
   const result = Promise.all([
     await client.apis.batch.v1.namespaces('fushigi').jobs.post({ body: jobDefinition }),
     await client.apis.v1.namespaces('fushigi').services.post({ body: serviceDefinition }),
-    await client.apis['networking.istio.io'].v1alpha3.namespaces('fushigi').virtualservices.post({ body: VirtualServiceDefinition }),
+    await client.apis['networking.istio.io'].v1alpha3.namespaces('fushigi').virtualservices.post({ body: virtualServiceDefinition }),
   ]);
 }
 
