@@ -22,14 +22,14 @@ function prepareRunnerJob(jobTemplate, id) {
   return job;
 }
 
-setTimeout((async () => {
-  const client = new Client({ config: config.getInCluster() })
+//setTimeout((async () => {
+  //const client = new Client({ config: config.getInCluster() })
 
-  await client.loadSpec()
+  //await client.loadSpec()
 
-  const jobDefinition = prepareRunnerJob(job, id);
-  const result = await client.apis.batch.v1.namespaces('fushigi').jobs.post({ body: jobDefinition })
+  //const jobDefinition = prepareRunnerJob(job, id);
+  //const result = await client.apis.batch.v1.namespaces('fushigi').jobs.post({ body: jobDefinition })
 
 
-  console.log('RESULT', result)
-}), 5000);
+  //console.log('RESULT', result)
+//}), 5000);
