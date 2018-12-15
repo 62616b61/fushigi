@@ -49,10 +49,14 @@ async function spawnRunner() {
   const serviceDefinition = prepareRunnerService(id);
   const virtualServiceDefinition = prepareRunnerVirtualService(id);
 
-  const result = Promise.all([
-    await client.apis.batch.v1.namespaces('fushigi').jobs.post({ body: jobDefinition }),
-    await client.apis.v1.namespaces('fushigi').services.post({ body: serviceDefinition }),
-    await client.apis['networking.istio.io'].v1alpha3.namespaces('fushigi').virtualservices.post({ body: virtualServiceDefinition }),
+  const createJob = client.apis.batch.v1.namespaces('fushigi').jobs.post({ body: jobDefinition });
+  const createService = client.apis.v1.namespaces('fushigi').services.post({ body: serviceDefinition });
+  const createVirtualService = client.apis['networking.istio.io'].v1alpha3.namespaces('fushigi').virtualservices.post({ body: virtualServiceDefinition });
+
+  const result = await Promise.all([
+    createJob,
+    createService,
+    createVirtualService,
   ]);
 }
 
