@@ -11,6 +11,11 @@ build:
     context: ./scheduler/
     sync:
       '*.js': .
+
+  - image: kurai/fushigi/runner
+    context: ./runner/
+    sync:
+      '*.js': .
 deploy:
   kubectl:
     manifests:
