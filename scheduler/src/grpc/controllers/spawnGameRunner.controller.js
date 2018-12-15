@@ -1,4 +1,8 @@
+const { spawnRunner } = require('../../libs/spawner');
+
 async function spawnGameRunner(call, callback) {
+  await spawnRunner();
+
   callback(
     null,
     {
