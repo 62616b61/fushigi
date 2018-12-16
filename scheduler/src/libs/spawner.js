@@ -37,6 +37,7 @@ function prepareRunnerVirtualService(id) {
   const virtualService = JSON.parse(JSON.stringify(virtualServiceTemplate));
 
   virtualService.metadata.name += `-${id}`.toLowerCase();
+  virtualService.spec.http[0].match[0].headers.runner.exact = id;
   virtualService.spec.http[0].route[0].destination.host += `-${id}`.toLowerCase();
 
   return virtualService;

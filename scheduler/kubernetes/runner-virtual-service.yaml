@@ -9,6 +9,10 @@ spec:
   gateways:
   - gateway
   http:
-  - route:
+  - match:
+    - headers:
+        runner:
+          exact: PUT_RUNNER_ID_HERE
+    route:
     - destination:
         host: runner
