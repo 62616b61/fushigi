@@ -1,5 +1,5 @@
-apiVersion: batch/v1
-kind: Job
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: runner
   namespace: fushigi
@@ -8,14 +8,23 @@ metadata:
     run: runner
     runner: PUT_RUNNER_ID_HERE
 spec:
-  template:
-    metadata:
+  replicas: 1
+  selector:
+    matchLabels:
       app: fushigi
       run: runner
       runner: PUT_RUNNER_ID_HERE
+  template:
+    metadata:
+      labels:
+        app: fushigi
+        run: runner
+        runner: PUT_RUNNER_ID_HERE
     spec:
-      restartPolicy: Never
       containers:
       - image: kurai/fushigi/runner
         name: runner
         imagePullPolicy: IfNotPresent
+        env:
+        - name: ID
+          value: PUT_RUNNER_ID_HERE

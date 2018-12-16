@@ -3,21 +3,24 @@ const uuid = require('short-uuid');
 const k8s = require('kubernetes-client');
 
 const istioVirtualServiceCRD = yaml.load(__dirname + '/../../kubernetes/istio-virtual-service-crd.yaml');
-const jobTemplate = yaml.load(__dirname + '/../../kubernetes/runner-job.yaml');
+const deploymentTemplate = yaml.load(__dirname + '/../../kubernetes/runner-deployment.yaml');
 const serviceTemplate = yaml.load(__dirname + '/../../kubernetes/runner-service.yaml');
 const virtualServiceTemplate = yaml.load(__dirname + '/../../kubernetes/runner-virtual-service.yaml');
 
 const client = new k8s.Client({ config: k8s.config.getInCluster() });
 client.addCustomResourceDefinition(istioVirtualServiceCRD);
 
-function prepareRunnerJob(id) {
-  const job = JSON.parse(JSON.stringify(jobTemplate));
+function prepareRunnerDeployment(id) {
+  const deployment = JSON.parse(JSON.stringify(deploymentTemplate));
 
-  job.metadata.name += `-${id}`.toLowerCase();
-  job.metadata.labels.runner = id;
-  job.spec.template.metadata.runner = id;
+  deployment.metadata.name += `-${id}`.toLowerCase();
+  deployment.metadata.labels.runner = id;
+  deployment.spec.selector.matchLabels.runner = id;
+  deployment.spec.template.metadata.labels.runner = id;
 
-  return job;
+  deployment.spec.template.spec.containers[0].env[0].value = `"${id}"`;
+
+  return deployment;
 }
 
 function prepareRunnerService(id) {
@@ -34,8 +37,7 @@ function prepareRunnerVirtualService(id) {
   const virtualService = JSON.parse(JSON.stringify(virtualServiceTemplate));
 
   virtualService.metadata.name += `-${id}`.toLowerCase();
-  virtualService.spec.hosts[0] += `-${id}`;
-  virtualService.spec.http[0].route[0].destination.host += `-${id}`;
+  virtualService.spec.http[0].route[0].destination.host += `-${id}`.toLowerCase();
 
   return virtualService;
 }
@@ -45,16 +47,16 @@ async function spawnRunner() {
 
   const id = uuid.generate();
 
-  const jobDefinition = prepareRunnerJob(id);
+  const deploymentDefinition = prepareRunnerDeployment(id);
   const serviceDefinition = prepareRunnerService(id);
   const virtualServiceDefinition = prepareRunnerVirtualService(id);
 
-  const createJob = client.apis.batch.v1.namespaces('fushigi').jobs.post({ body: jobDefinition });
+  const createDeployment = client.apis.apps.v1.namespaces('fushigi').deployments.post({ body: deploymentDefinition });
   const createService = client.apis.v1.namespaces('fushigi').services.post({ body: serviceDefinition });
   const createVirtualService = client.apis['networking.istio.io'].v1alpha3.namespaces('fushigi').virtualservices.post({ body: virtualServiceDefinition });
 
   const result = await Promise.all([
-    createJob,
+    createDeployment,
     createService,
     createVirtualService,
   ]);

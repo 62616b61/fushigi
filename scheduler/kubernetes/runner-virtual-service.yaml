@@ -5,7 +5,9 @@ metadata:
   namespace: fushigi
 spec:
   hosts:
-  - runner
+  - "*"
+  gateways:
+  - gateway
   http:
   - route:
     - destination:

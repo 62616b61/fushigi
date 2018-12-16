@@ -14,6 +14,6 @@ spec:
     run: runner
     runner: PUT_RUNNER_ID_HERE
   ports:
-  - name: grpc
+  - name: http
     port: 3000
     targetPort: 3000
