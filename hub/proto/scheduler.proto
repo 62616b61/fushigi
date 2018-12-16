@@ -16,5 +16,5 @@ message SpawnGameRunnerRequest {
 }
 
 message SpawnGameRunnerResponse {
-  string url = 1;
+  string runner = 1;
 }

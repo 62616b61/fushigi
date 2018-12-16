@@ -56,11 +56,13 @@ async function spawnRunner() {
   const createService = client.apis.v1.namespaces('fushigi').services.post({ body: serviceDefinition });
   const createVirtualService = client.apis['networking.istio.io'].v1alpha3.namespaces('fushigi').virtualservices.post({ body: virtualServiceDefinition });
 
-  const result = await Promise.all([
+  await Promise.all([
     createDeployment,
     createService,
     createVirtualService,
   ]);
+
+  return id;
 }
 
 module.exports = {
