@@ -1,6 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import Home from './pages/Home/Home';
+import { BrowserRouter } from 'react-router-dom'
 
-ReactDOM.render(<Home />, document.getElementById('root'));
+import App from './App';
+
+import './styles/index.css';
+
+const Root = () => (
+  <div>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </div>
+)
+
+ReactDOM.render(<Root />, document.getElementById('root'));
