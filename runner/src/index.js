@@ -1,9 +1,10 @@
 const http = require('http')
 const port = 3000
+const RUNNER_ID = process.env.ID
 
 const requestHandler = (request, response) => {
   console.log(request.url)
-  response.end('Hello Node.js Server!')
+  response.end(`Hello from runner: ${RUNNER_ID}`);
 }
 
 const server = http.createServer(requestHandler)
