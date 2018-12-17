@@ -2,10 +2,10 @@ const yaml = require('yamljs');
 const uuid = require('short-uuid');
 const k8s = require('kubernetes-client');
 
-const istioVirtualServiceCRD = yaml.load(__dirname + '/../../kubernetes/istio-virtual-service-crd.yaml');
-const deploymentTemplate = yaml.load(__dirname + '/../../kubernetes/runner-deployment.yaml');
-const serviceTemplate = yaml.load(__dirname + '/../../kubernetes/runner-service.yaml');
-const virtualServiceTemplate = yaml.load(__dirname + '/../../kubernetes/runner-virtual-service.yaml');
+const istioVirtualServiceCRD = yaml.load(__dirname + '/../kubernetes/istio-virtual-service-crd.yaml');
+const deploymentTemplate = yaml.load(__dirname + '/../kubernetes/runner-deployment.yaml');
+const serviceTemplate = yaml.load(__dirname + '/../kubernetes/runner-service.yaml');
+const virtualServiceTemplate = yaml.load(__dirname + '/../kubernetes/runner-virtual-service.yaml');
 
 const client = new k8s.Client({ config: k8s.config.getInCluster() });
 client.addCustomResourceDefinition(istioVirtualServiceCRD);
