@@ -1,7 +1,7 @@
 const grpc = require('grpc');
 const protoLoader = require('@grpc/proto-loader');
 
-const PROTO_PATH = __dirname + '/../../proto/scheduler.proto';
+const PROTO_PATH = __dirname + '/proto/scheduler.proto';
 const packageDefinition = protoLoader.loadSync(PROTO_PATH);
 const proto = grpc.loadPackageDefinition(packageDefinition).scheduler;
 
