@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: hub
+  namespace: fushigi
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - gateway
+  http:
+  - match:
+    - uri:
+        prefix: "/ws"
+    route:
+    - destination:
+        host: hub

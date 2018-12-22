@@ -1,4 +1,5 @@
 const { scheduler } = require('./grpc/client');
+const { hub } = require('./ws/server');
 
 setTimeout(() => {
   const player1 = { id: 1 };
@@ -9,5 +10,5 @@ setTimeout(() => {
   });
 }, 5000);
 
-// dont die
-setInterval(() => {}, 100000);
+hub.listen(3000);
+console.log('ws server is up')
