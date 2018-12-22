@@ -16,3 +16,5 @@ spec:
     route:
     - destination:
         host: runner
+        port:
+          number: 3000
