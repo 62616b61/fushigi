@@ -1,0 +1,12 @@
+.fushigi {
+  color: white;
+  margin-bottom: 50px;
+}
+
+.fushigi .term {
+  font-size: 25px;
+}
+
+.fushigi .definition span {
+  color: grey;
+}

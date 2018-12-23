@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Form, Grid, Header, Segment, Dimmer, Loader } from 'semantic-ui-react';
+import FushigiDefinition from '../../components/FushigiDefinition';
 
 import './Home.css';
 
@@ -61,6 +62,7 @@ class Home extends React.Component {
       <div className="Home">
         <Grid textAlign='center' style={{ height: '100%' }} verticalAlign='middle'>
           <Grid.Column width={4}>
+            <FushigiDefinition />
             <Segment stacked>
               <Dimmer active={this.state.step !== STEP_IDLE}>
                 <Loader>Loading</Loader>
