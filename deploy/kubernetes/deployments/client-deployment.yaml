@@ -1,0 +1,23 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: client
+  namespace: fushigi
+  labels:
+    app: fushigi
+    run: client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fushigi
+      run: client
+  template:
+    metadata:
+      labels:
+        app: fushigi
+        run: client
+    spec:
+      containers:
+      - image: kurai/fushigi/client
+        name: client

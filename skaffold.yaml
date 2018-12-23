@@ -12,6 +12,11 @@ build:
     sync:
       '*.js': .
 
+  - image: kurai/fushigi/client
+    context: ./client/
+    sync:
+      '*.js': .
+
   - image: kurai/fushigi/runner
     context: ./runner/
     sync:
