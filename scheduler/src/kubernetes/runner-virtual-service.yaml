@@ -10,9 +10,10 @@ spec:
   - gateway
   http:
   - match:
-    - headers:
-        runner:
-          exact: PUT_RUNNER_ID_HERE
+    - uri:
+        exact: "/runner/"
+    rewrite:
+      uri: "/"
     route:
     - destination:
         host: runner
