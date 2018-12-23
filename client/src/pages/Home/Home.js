@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Form, Grid, Header, Segment, Dimmer, Loader } from 'semantic-ui-react';
+import { Redirect } from 'react-router-dom';
 
 import FushigiDefinition from '../../components/FushigiDefinition';
 
@@ -8,6 +9,7 @@ import './Home.css';
 const STEP_IDLE = 0;
 const STEP_LOOKING_FOR_OPPONENT = 1;
 const STEP_CREATING_RUNNER = 2;
+const STEP_READY = 3;
 
 const MSG_TYPE_JOIN = 'join';
 const MSG_TYPE_OPPONENT_FOUND = 'opponent-found';
@@ -30,7 +32,7 @@ class Home extends React.Component {
     this.socket = new WebSocket('ws://192.168.99.100:31380/ws');
 
     this.socket.addEventListener('open', () => {
-      console.log('SOCKET CONNECTION IS OPEN')
+      console.log('Hub socket connection is open.')
     });
 
     this.socket.addEventListener('message', message => this.handleMessage(message.data));
@@ -41,6 +43,7 @@ class Home extends React.Component {
 
     try {
       this.socket.close();
+      console.log('Hub socket connection has been closed.')
     } catch (err) {
       console.log('Error closing socket:', err);
     }
@@ -56,8 +59,11 @@ class Home extends React.Component {
     }
 
     if (message.type === MSG_TYPE_RUNNER_READY) {
+      this.setState({
+        step: STEP_READY,
+      });
+
       this.props.context.saveRunner(message.runner);
-      console.log(this.context)
     }
   }
 
@@ -81,9 +87,11 @@ class Home extends React.Component {
   }
 
   render() {
-    console.log('CONTEXT', this.props.context)
     return (
-      <div className="Home">
+      <div>
+
+        {this.state.step === STEP_READY ? <Redirect push to="/play" /> : null}
+
         <Grid textAlign='center' style={{ height: '100%' }} verticalAlign='middle'>
           <Grid.Column width={4}>
             <FushigiDefinition />
