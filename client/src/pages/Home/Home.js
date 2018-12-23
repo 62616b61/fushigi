@@ -8,6 +8,10 @@ const STEP_IDLE = 0;
 const STEP_LOOKING_FOR_OPPONENT = 1;
 const STEP_CREATING_RUNNER = 2;
 
+const MSG_TYPE_JOIN = 'join';
+const MSG_TYPE_OPPONENT_FOUND = 'opponent-found';
+const MSG_TYPE_RUNNER_READY = 'runner-ready';
+
 class Home extends React.Component {
   constructor() {
     super();
@@ -18,7 +22,7 @@ class Home extends React.Component {
     };
 
     this.handleChange = this.handleChange.bind(this);
-    this.findOpponent = this.findOpponent.bind(this);
+    this.sendJoinMessage = this.sendJoinMessage.bind(this);
   }
 
   componentDidMount() {
@@ -28,9 +32,7 @@ class Home extends React.Component {
       console.log('SOCKET CONNECTION IS OPEN')
     });
 
-    this.socket.addEventListener('message', (newMsg) => {
-
-    });
+    this.socket.addEventListener('message', message => this.handleMessage(message.data));
   }
 
   componentWillUnmount() {
@@ -39,22 +41,41 @@ class Home extends React.Component {
     try {
       this.socket.close();
     } catch (err) {
-      console.log('Error in closing socket: ', err);
+      console.log('Error closing socket:', err);
+    }
+  }
+
+  handleMessage(data) {
+    const message = JSON.parse(data);
+
+    if (message.type === MSG_TYPE_OPPONENT_FOUND) {
+      this.setState({
+        step: STEP_CREATING_RUNNER,
+      });
+    }
+
+    if (message.type === MSG_TYPE_RUNNER_READY) {
+      console.log('RUNNER IS READY', message.runner);
     }
   }
 
   handleChange(event) {
     this.setState({
-      nickname: event.target.value
+      nickname: event.target.value,
     });
   }
 
-  findOpponent() {
+  sendJoinMessage() {
     this.setState({
       step: STEP_LOOKING_FOR_OPPONENT,
     });
 
-    console.log('CLICK', this.state)
+    const joinMessage = JSON.stringify({
+      type: MSG_TYPE_JOIN,
+      nickname: this.state.nickname,
+    });
+
+    this.socket.send(joinMessage);
   }
 
   render() {
@@ -65,18 +86,18 @@ class Home extends React.Component {
             <FushigiDefinition />
             <Segment stacked>
               <Dimmer active={this.state.step !== STEP_IDLE}>
-                <Loader>Loading</Loader>
+                <Loader>{this.state.step === STEP_LOOKING_FOR_OPPONENT ? 'Looking for opponent...' : 'Preparing your game...'}</Loader>
               </Dimmer>
+
               <Form size='large'>
                 <p>Choose your nickname</p>
                 <Form.Input fluid icon='user' iconPosition='left' placeholder='Nickname' value={this.state.nickname} onChange={this.handleChange} />
 
-                <Button color='teal' fluid size='large' onClick={this.findOpponent}>
+                <Button color='teal' fluid size='large' onClick={this.sendJoinMessage}>
                   Find opponent
                 </Button>
               </Form>
             </Segment>
-
           </Grid.Column>
         </Grid>
       </div>
