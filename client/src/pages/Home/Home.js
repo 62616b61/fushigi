@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Form, Grid, Header, Segment, Dimmer, Loader } from 'semantic-ui-react';
+
 import FushigiDefinition from '../../components/FushigiDefinition';
 
 import './Home.css';
@@ -55,7 +56,8 @@ class Home extends React.Component {
     }
 
     if (message.type === MSG_TYPE_RUNNER_READY) {
-      console.log('RUNNER IS READY', message.runner);
+      this.props.context.saveRunner(message.runner);
+      console.log(this.context)
     }
   }
 
@@ -79,6 +81,7 @@ class Home extends React.Component {
   }
 
   render() {
+    console.log('CONTEXT', this.props.context)
     return (
       <div className="Home">
         <Grid textAlign='center' style={{ height: '100%' }} verticalAlign='middle'>
