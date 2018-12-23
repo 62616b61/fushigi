@@ -51,11 +51,14 @@ class Home extends React.Component {
 
   handleMessage(data) {
     const message = JSON.parse(data);
+    console.log('Incoming message', message)
 
     if (message.type === MSG_TYPE_OPPONENT_FOUND) {
       this.setState({
         step: STEP_CREATING_RUNNER,
       });
+
+      this.props.context.saveOpponentNickname(message.opponentNickname);
     }
 
     if (message.type === MSG_TYPE_RUNNER_READY) {
@@ -77,6 +80,8 @@ class Home extends React.Component {
     this.setState({
       step: STEP_LOOKING_FOR_OPPONENT,
     });
+
+    this.props.context.saveNickname(this.state.nickname);
 
     const joinMessage = JSON.stringify({
       type: MSG_TYPE_JOIN,

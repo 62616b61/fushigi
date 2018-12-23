@@ -14,21 +14,20 @@ class Play extends React.Component {
   }
 
   render() {
-    const { runner } = this.props.context;
+    console.log('context', this.props.context)
+    const { nickname, opponentNickname, runner } = this.props.context;
 
+        //{!runner ? <Redirect to="/" /> : null}
     return (
       <div>
-
-        {!runner ? <Redirect to="/" /> : null}
-
         <Grid textAlign='center' style={{ height: '100%' }} verticalAlign='middle'>
           <Grid.Column width={4}>
             <Segment stacked>
-              <Header as="h2">You</Header>
+              <Header as="h2">You: { nickname }</Header>
 
               <Divider horizontal>VS</Divider>
 
-              <Header as="h2">Opponent</Header>
+              <Header as="h2">Opponent: { opponentNickname }</Header>
             </Segment>
           </Grid.Column>
         </Grid>
