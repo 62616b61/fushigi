@@ -14,6 +14,8 @@ spec:
         exact: "/"
     - uri:
         exact: "/play"
+    - uri:
+        prefix: "/static"
     route:
     - destination:
         host: client
