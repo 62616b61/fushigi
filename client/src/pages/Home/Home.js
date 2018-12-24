@@ -54,19 +54,19 @@ class Home extends React.Component {
     console.log('Incoming message', message)
 
     if (message.type === MSG_TYPE_OPPONENT_FOUND) {
+      this.props.context.saveOpponentNickname(message.opponentNickname);
+
       this.setState({
         step: STEP_CREATING_RUNNER,
       });
-
-      this.props.context.saveOpponentNickname(message.opponentNickname);
     }
 
     if (message.type === MSG_TYPE_RUNNER_READY) {
+      this.props.context.saveRunner(message.runner);
+
       this.setState({
         step: STEP_READY,
       });
-
-      this.props.context.saveRunner(message.runner);
     }
   }
 
@@ -77,11 +77,11 @@ class Home extends React.Component {
   }
 
   sendJoinMessage() {
+    this.props.context.saveNickname(this.state.nickname);
+
     this.setState({
       step: STEP_LOOKING_FOR_OPPONENT,
     });
-
-    this.props.context.saveNickname(this.state.nickname);
 
     const joinMessage = JSON.stringify({
       type: MSG_TYPE_JOIN,
@@ -94,9 +94,7 @@ class Home extends React.Component {
   render() {
     return (
       <div>
-
         {this.state.step === STEP_READY ? <Redirect push to="/play" /> : null}
-
         <Grid textAlign='center' style={{ height: '100%' }} verticalAlign='middle'>
           <Grid.Column width={4}>
             <FushigiDefinition />
