@@ -46,13 +46,11 @@ function handleMessage(connection, data) {
 function handleClosedConnection(connection) {
   const { nickname } = connection;
 
-  console.log('BEFORE', queue)
   if (nickname) {
     const index = queue.findIndex(c => c.nickname === nickname);
 
     if (index !== -1) {
       queue.splice(index);
-      console.log('AFTER', queue)
     }
   }
 }
@@ -64,7 +62,6 @@ wss.on('connection', connection => {
 
 // Periodically check the queue and spawn game runner if enough players are present in the queue
 setInterval(() => {
-  console.log('QUEUE SIZE', queue.length)
   if (queue.length >= 2) {
     const player1 = queue.shift();
     const player2 = queue.shift();
@@ -73,12 +70,9 @@ setInterval(() => {
     sendOpponentFoundMessage(player2, player1.nickname);
 
     scheduler.SpawnGameRunner({}, (err, response) => {
-      console.log('Spawning Game Runner:', response, err);
       sendRunnerReadyMessage(player1, response.runner);
       sendRunnerReadyMessage(player2, response.runner);
     });
-
-    console.log('THERE ARE TWO PLAYERS WILLING TO PLAY');
   }
 }, QUEUE_CHECK_PERIOD);
 
