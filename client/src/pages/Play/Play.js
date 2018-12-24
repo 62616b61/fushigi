@@ -29,6 +29,7 @@ class Play extends React.Component {
   constructor(props) {
     super(props);
 
+    this.isActivePage = true;
     this.state = {
       step: STEP_CONNECTING,
     };
@@ -39,6 +40,7 @@ class Play extends React.Component {
   }
 
   componentWillUnmount() {
+    this.isActivePage = false;
     if (!this.socket) return;
 
     try {
@@ -62,7 +64,9 @@ class Play extends React.Component {
 
     this.socket.addEventListener('error', () => {
       console.log('Retrying in', CONNECTION_PERIOD);
-      setTimeout(() => this.connectToRunner(), CONNECTION_PERIOD);
+      if (this.isActivePage) {
+        setTimeout(() => this.connectToRunner(), CONNECTION_PERIOD);
+      }
     });
   }
 
