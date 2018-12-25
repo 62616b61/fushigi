@@ -17,6 +17,14 @@ const MSG_TYPE_CHOOSE_SHAPE = 'choose-shape';
 const MSG_TYPE_OPPONENT_CHOSE = 'opponent-chose';
 const MSG_TYPE_RESULTS = 'results';
 
+function startNewRound() {
+  const player1 = players[0];
+  const player2 = players[1];
+
+  player1.shape = null;
+  player2.shape = null;
+}
+
 function checkGameResults() {
   const player1 = players[0];
   const player2 = players[1];
@@ -25,6 +33,8 @@ function checkGameResults() {
   if (player1.shape && player2.shape) {
     sendResults(player1, player2.shape);
     sendResults(player2, player1.shape);
+
+    startNewRound();
   }
 }
 
