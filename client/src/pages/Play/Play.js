@@ -2,7 +2,8 @@ import React from 'react';
 import { Grid, Header, Segment, Divider, Dimmer, Loader } from 'semantic-ui-react';
 import { Redirect } from 'react-router-dom';
 
-import { ShapeSelector, SelectedShape } from '../../components/Shapes';
+import ShapeSelector from '../../components/Shapes/ShapeSelector';
+import SelectedShape from '../../components/Shapes/SelectedShape';
 import BackButton from '../../components/BackButton';
 
 import './Play.css';
