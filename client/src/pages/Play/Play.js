@@ -90,6 +90,13 @@ class Play extends React.Component {
         opponentChoseShape: true,
       });
     }
+
+    if (message.type === MSG_TYPE_RESULTS) {
+      this.setState({
+        step: STEP_DISPLAYING_RESULTS,
+        opponentShape: message.opponentShape,
+      });
+    }
   }
 
   sendPlayerAuthMessage() {

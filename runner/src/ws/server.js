@@ -17,6 +17,17 @@ const MSG_TYPE_CHOOSE_SHAPE = 'choose-shape';
 const MSG_TYPE_OPPONENT_CHOSE = 'opponent-chose';
 const MSG_TYPE_RESULTS = 'results';
 
+function checkGameResults() {
+  const player1 = players[0];
+  const player2 = players[1];
+
+  // Check if both players have chosen shapes
+  if (player1.shape && player2.shape) {
+    sendResults(player1, player2.shape);
+    sendResults(player2, player1.shape);
+  }
+}
+
 function sendOpponentJoinedMessage(player) {
   const message = JSON.stringify({
     type: MSG_TYPE_OPPONENT_JOINED,
@@ -36,6 +47,15 @@ function sendOpponentLeftMessage(player) {
 function sendOpponentChoseShape(player) {
   const message = JSON.stringify({
     type: MSG_TYPE_OPPONENT_CHOSE,
+  });
+
+  player.send(message);
+}
+
+function sendResults(player, opponentShape) {
+  const message = JSON.stringify({
+    type: MSG_TYPE_RESULTS,
+    opponentShape,
   });
 
   player.send(message);
@@ -74,6 +94,7 @@ function handleMessage(connection, data) {
     }
 
     sendOpponentChoseShape(connection.opponent);
+    checkGameResults();
   }
 }
 
