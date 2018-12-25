@@ -1,6 +1,8 @@
 const http = require('http');
 const WebSocket = require('ws');
 
+const { PLAYER_ONE_ID, PLAYER_TWO_ID } = require('../config');
+
 let counter = 0;
 const players = [];
 

@@ -28,3 +28,9 @@ spec:
         env:
         - name: ID
           value: PUT_RUNNER_ID_HERE
+
+        - name: PLAYER_ONE_ID
+          value: PUT_PLAYER_ONE_ID_HERE
+
+        - name: PLAYER_TWO_ID
+          value: PUT_PLAYER_TWO_ID_HERE

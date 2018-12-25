@@ -1,7 +1,8 @@
 const { spawnRunner } = require('../../libs/spawner');
 
 async function spawnGameRunner(call, callback) {
-  const runnerId = await spawnRunner();
+  const { player1, player2 } = call.request;
+  const runnerId = await spawnRunner(player1, player2);
 
   callback(
     null,

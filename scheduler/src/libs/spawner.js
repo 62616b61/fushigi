@@ -10,7 +10,7 @@ const virtualServiceTemplate = yaml.load(__dirname + '/../kubernetes/runner-virt
 const client = new k8s.Client({ config: k8s.config.getInCluster() });
 client.addCustomResourceDefinition(istioVirtualServiceCRD);
 
-function prepareRunnerDeployment(id) {
+function prepareRunnerDeployment(id, player1, player2) {
   const deployment = JSON.parse(JSON.stringify(deploymentTemplate));
 
   deployment.metadata.name += `-${id}`.toLowerCase();
@@ -19,6 +19,8 @@ function prepareRunnerDeployment(id) {
   deployment.spec.template.metadata.labels.runner = id;
 
   deployment.spec.template.spec.containers[0].env[0].value = `"${id}"`;
+  deployment.spec.template.spec.containers[0].env[1].value = player1.id;
+  deployment.spec.template.spec.containers[0].env[2].value = player2.id;
 
   return deployment;
 }
@@ -43,12 +45,12 @@ function prepareRunnerVirtualService(id) {
   return virtualService;
 }
 
-async function spawnRunner() {
+async function spawnRunner(player1, player2) {
   await client.loadSpec();
 
   const id = uuid.generate();
 
-  const deploymentDefinition = prepareRunnerDeployment(id);
+  const deploymentDefinition = prepareRunnerDeployment(id, player1, player2);
   const serviceDefinition = prepareRunnerService(id);
   const virtualServiceDefinition = prepareRunnerVirtualService(id);
 

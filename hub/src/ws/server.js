@@ -1,3 +1,4 @@
+const uuid = require('short-uuid');
 const http = require('http');
 const WebSocket = require('ws');
 const { scheduler } = require('../grpc/client');
@@ -56,6 +57,8 @@ function handleClosedConnection(connection) {
 }
 
 wss.on('connection', connection => {
+  connection.id = uuid.generate();
+
   connection.on('message', (data) => handleMessage(connection, data));
   connection.on('close', () => handleClosedConnection(connection));
 });
@@ -66,10 +69,16 @@ setInterval(() => {
     const player1 = queue.shift();
     const player2 = queue.shift();
 
+    const grpcPlayer1 = { id: player1.id };
+    const grpcPlayer2 = { id: player2.id };
+
     sendOpponentFoundMessage(player1, player2.nickname);
     sendOpponentFoundMessage(player2, player1.nickname);
 
-    scheduler.SpawnGameRunner({}, (err, response) => {
+    scheduler.SpawnGameRunner({
+      player1: grpcPlayer1,
+      player2: grpcPlayer2,
+    }, (err, response) => {
       sendRunnerReadyMessage(player1, response.runner);
       sendRunnerReadyMessage(player2, response.runner);
     });
