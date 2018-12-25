@@ -51,7 +51,9 @@ function sendOpponentLeftMessage(player) {
     type: MSG_TYPE_OPPONENT_LEFT,
   });
 
-  player.send(message);
+  if (player.readyState === 1) {
+    player.send(message);
+  }
 }
 
 function sendOpponentChoseShape(player) {
