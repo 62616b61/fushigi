@@ -7,11 +7,18 @@ export class ContextProvider extends React.Component {
     super(props);
 
     this.state = {
+      playerId: null,
       nickname: null,
       opponentNickname: null,
       runner: null,
     };
   }
+
+  savePlayerId = (id) => {
+    this.setState({
+      playerId: id,
+    });
+  };
 
   saveNickname = (nickname) => {
     this.setState({
@@ -37,10 +44,12 @@ export class ContextProvider extends React.Component {
     return (
       <Context.Provider
         value={{
+          savePlayerId: this.savePlayerId,
           saveNickname: this.saveNickname,
           saveOpponentNickname: this.saveOpponentNickname,
           saveRunner: this.saveRunner,
 
+          playerId: this.state.playerId,
           nickname: this.state.nickname,
           opponentNickname: this.state.opponentNickname,
           runner: this.state.runner,

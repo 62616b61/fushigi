@@ -4,7 +4,9 @@ const WebSocket = require('ws');
 const { scheduler } = require('../grpc/client');
 
 const QUEUE_CHECK_PERIOD = 2000;
+
 const MSG_TYPE_JOIN = 'join';
+const MSG_TYPE_ASSIGNED_PLAYER_ID = 'assigned-player-id';
 const MSG_TYPE_OPPONENT_FOUND = 'opponent-found';
 const MSG_TYPE_RUNNER_READY = 'runner-ready';
 
@@ -15,6 +17,15 @@ const wss = new WebSocket.Server({
   server: hub,
   clientTracking: true,
 });
+
+function sendAssignedPlayerIdMessage(connection) {
+  const message = JSON.stringify({
+    type: MSG_TYPE_ASSIGNED_PLAYER_ID,
+    playerId: connection.id,
+  });
+
+  connection.send(message);
+}
 
 function sendOpponentFoundMessage(connection, opponentNickname) {
   const message = JSON.stringify({
@@ -58,6 +69,8 @@ function handleClosedConnection(connection) {
 
 wss.on('connection', connection => {
   connection.id = uuid.generate();
+
+  sendAssignedPlayerIdMessage(connection);
 
   connection.on('message', (data) => handleMessage(connection, data));
   connection.on('close', () => handleClosedConnection(connection));

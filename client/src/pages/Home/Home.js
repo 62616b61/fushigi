@@ -12,6 +12,7 @@ const STEP_CREATING_RUNNER = 2;
 const STEP_READY = 3;
 
 const MSG_TYPE_JOIN = 'join';
+const MSG_TYPE_ASSIGNED_PLAYER_ID = 'assigned-player-id';
 const MSG_TYPE_OPPONENT_FOUND = 'opponent-found';
 const MSG_TYPE_RUNNER_READY = 'runner-ready';
 
@@ -52,6 +53,10 @@ class Home extends React.Component {
   handleMessage(data) {
     const message = JSON.parse(data);
     console.log('Incoming message', message)
+
+    if (message.type === MSG_TYPE_ASSIGNED_PLAYER_ID) {
+      this.props.context.savePlayerId(message.playerId);
+    }
 
     if (message.type === MSG_TYPE_OPPONENT_FOUND) {
       this.props.context.saveOpponentNickname(message.opponentNickname);
