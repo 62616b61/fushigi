@@ -16,13 +16,16 @@ const WinButton = ({player, shape}) => {
 };
 
 const LoseButton = ({shape}) => {
-  return <Button
-    color='teal'
-    size='huge'
-    icon={SHAPE_TO_ICON[shape]}
-    active
-  />
-};
+    return (
+      <Button.Group vertical>
+        <Button
+          color='teal'
+          size='huge'
+          icon={SHAPE_TO_ICON[shape]}
+          active
+        />
+      </Button.Group>
+    )};
 
 const SelectedShape = ({player, shape, opponentShape}) => {
   const isWin = RULES[shape] === opponentShape;
