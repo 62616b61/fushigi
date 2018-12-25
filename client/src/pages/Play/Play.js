@@ -1,6 +1,9 @@
 import React from 'react';
-import { Button, Container, Grid, Header, Segment, Divider, Dimmer, Loader } from 'semantic-ui-react';
-import { Redirect, withRouter } from 'react-router-dom';
+import { Grid, Header, Segment, Divider, Dimmer, Loader } from 'semantic-ui-react';
+import { Redirect } from 'react-router-dom';
+
+import { ShapeSelector, SelectedShape } from '../../components/Shapes';
+import BackButton from '../../components/BackButton';
 
 import './Play.css';
 
@@ -10,20 +13,15 @@ const NICKNAME_PLACEHOLDER = 'You';
 const OPPONENT_NICKNAME_PLACEHOLDER = 'Opponent';
 
 const STEP_CONNECTING = 0;
-const STEP_WAITING = 1;
-const STEP_PLAYING = 2;
+const STEP_WAITING_FOR_OPPONENT = 1;
+const STEP_CHOOSING_SHAPES = 2;
+const STEP_DISPLAYING_RESULTS = 3;
 
 const MSG_TYPE_OPPONENT_JOINED = 'opponent-joined';
 const MSG_TYPE_OPPONENT_LEFT = 'opponent-left';
-
-const BackButton = withRouter(({ history }) => (
-  <Button
-    icon='left arrow'
-    labelPosition='left'
-    content='Main menu'
-    onClick={() => { history.push('/') }}
-  />
-));
+const MSG_TYPE_CHOOSE_SHAPE = 'choose-shape';
+const MSG_TYPE_OPPONENT_CHOSE = 'opponent-chose';
+const MSG_TYPE_RESULTS = 'results';
 
 class Play extends React.Component {
   constructor(props) {
@@ -32,6 +30,8 @@ class Play extends React.Component {
     this.isActivePage = true;
     this.state = {
       step: STEP_CONNECTING,
+      selectedShape: null,
+      opponentShape: null,
     };
   }
 
@@ -57,7 +57,7 @@ class Play extends React.Component {
 
     this.socket.addEventListener('open', () => {
       console.log('Runner socket connection is open.')
-      this.setState({ step: STEP_WAITING });
+      this.setState({ step: STEP_WAITING_FOR_OPPONENT });
     });
 
     this.socket.addEventListener('message', message => this.handleMessage(message.data));
@@ -76,10 +76,16 @@ class Play extends React.Component {
 
     if (message.type === MSG_TYPE_OPPONENT_JOINED) {
       this.setState({
-        step: STEP_PLAYING,
+        step: STEP_CHOOSING_SHAPES,
       });
     }
   }
+
+  selectShape = (shape) => {
+    if (!this.state.selectedShape) {
+      this.setState({ selectedShape: shape });
+    }
+  };
 
   render() {
     const {
@@ -88,11 +94,17 @@ class Play extends React.Component {
       runner,
     } = this.props.context;
 
+    const {
+      step,
+      selectedShape,
+      opponentShape,
+    } = this.state;
+
     return (
       <div>
         { !runner ? <Redirect to="/" /> : null }
         <Grid textAlign='center' style={{ height: '100%' }} verticalAlign='middle'>
-          <Grid.Column width={4}>
+          <Grid.Column style={{width: '700px'}}>
             <Segment.Group stacked>
               <Segment>
                 <Grid columns={2} padded>
@@ -108,18 +120,28 @@ class Play extends React.Component {
                 <Divider vertical>VS</Divider>
               </Segment>
               <Segment>
-                <Dimmer active={this.state.step !== STEP_PLAYING}>
+                <Dimmer active={this.state.step < STEP_CHOOSING_SHAPES}>
                   <Loader>{this.state.step === STEP_CONNECTING ? 'Connecting to the game...' : 'Waiting for opponent...'}</Loader>
                 </Dimmer>
 
-                <Grid style={{height: '300px'}} columns={2} padded celled='internally'>
+                <Grid style={{height: '300px'}} columns={2} padded>
                   <Grid.Column verticalAlign='middle'>
-                    <p>Rock Paper Scrissors</p>
+                    {
+                      step <= STEP_CHOOSING_SHAPES
+                        ? <ShapeSelector selectedShape={selectedShape} onClick={this.selectShape} />
+                        : <SelectedShape shape={selectedShape} opponentShape={opponentShape} player />
+                    }
                   </Grid.Column>
                   <Grid.Column verticalAlign='middle'>
-                    <p>Opponent is thinking...</p>
+                    {
+                      step <= STEP_CHOOSING_SHAPES
+                        ? <p>Opponent is thinking...</p>
+                        : <SelectedShape shape={opponentShape} opponentShape={selectedShape} />
+                    }
                   </Grid.Column>
                 </Grid>
+
+                <Divider vertical>Choose</Divider>
               </Segment>
               <Segment textAlign='left' secondary>
                 <BackButton />
