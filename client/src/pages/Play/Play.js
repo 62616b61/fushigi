@@ -1,10 +1,11 @@
 import React from 'react';
-import { Grid, Header, Segment, Divider, Dimmer, Loader } from 'semantic-ui-react';
+import { Grid, Container, Header, Segment, Divider, Dimmer, Loader } from 'semantic-ui-react';
 import { Redirect } from 'react-router-dom';
 
 import ShapeSelector from '../../components/Shapes/ShapeSelector';
 import SelectedShape from '../../components/Shapes/SelectedShape';
 import BackButton from '../../components/BackButton';
+import Countdown from '../../components/Countdown';
 
 import './Play.css';
 
@@ -126,6 +127,15 @@ class Play extends React.Component {
     this.sendChooseShapeMessage(shape);
   };
 
+  startNewRound = () => {
+    this.setState({
+      step: STEP_CHOOSING_SHAPES,
+      opponentChoseShape: false,
+      selectedShape: null,
+      opponentShape: null,
+    });
+  }
+
   render() {
     const {
       nickname,
@@ -185,7 +195,15 @@ class Play extends React.Component {
                   </Grid.Column>
                 </Grid>
 
-                <Divider vertical>Choose</Divider>
+                <Divider vertical>
+                  <Container textAlign='center' style={{width: '100px'}}>
+                    {
+                      step <= STEP_CHOOSING_SHAPES
+                        ? 'CHOOSE'
+                        : <Countdown seconds={3} onFinish={this.startNewRound} />
+                    }
+                  </Container>
+                </Divider>
               </Segment>
               <Segment textAlign='left' secondary>
                 <BackButton />
