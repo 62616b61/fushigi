@@ -33,6 +33,14 @@ function sendOpponentLeftMessage(player) {
   player.send(message);
 }
 
+function sendOpponentChoseShape(player) {
+  const message = JSON.stringify({
+    type: MSG_TYPE_OPPONENT_CHOSE,
+  });
+
+  player.send(message);
+}
+
 function pairPlayersAsOpponents(player1, player2) {
   player1.opponent = player2;
   player2.opponent = player1;
@@ -58,6 +66,14 @@ function handleMessage(connection, data) {
       sendOpponentJoinedMessage(player1);
       sendOpponentJoinedMessage(player2);
     }
+  }
+
+  if (message.type === MSG_TYPE_CHOOSE_SHAPE) {
+    if (!connection.shape) {
+      connection.shape = message.shape;
+    }
+
+    sendOpponentChoseShape(connection.opponent);
   }
 }
 

@@ -31,6 +31,7 @@ class Play extends React.Component {
     this.isActivePage = true;
     this.state = {
       step: STEP_CONNECTING,
+      opponentChoseShape: false,
       selectedShape: null,
       opponentShape: null,
     };
@@ -83,6 +84,12 @@ class Play extends React.Component {
         step: STEP_CHOOSING_SHAPES,
       });
     }
+
+    if (message.type === MSG_TYPE_OPPONENT_CHOSE) {
+      this.setState({
+        opponentChoseShape: true,
+      });
+    }
   }
 
   sendPlayerAuthMessage() {
@@ -94,10 +101,21 @@ class Play extends React.Component {
     this.socket.send(message);
   }
 
+  sendChooseShapeMessage(shape) {
+    const message = JSON.stringify({
+      type: MSG_TYPE_CHOOSE_SHAPE,
+      shape,
+    });
+
+    this.socket.send(message);
+  }
+
   selectShape = (shape) => {
     if (!this.state.selectedShape) {
       this.setState({ selectedShape: shape });
     }
+
+    this.sendChooseShapeMessage(shape);
   };
 
   render() {
@@ -109,9 +127,14 @@ class Play extends React.Component {
 
     const {
       step,
+      opponentChoseShape,
       selectedShape,
       opponentShape,
     } = this.state;
+
+    const opponentChoosingOrWaiting = (
+      <p>{opponentChoseShape ? 'Opponent is waiting for you.' : 'Opponent is thinking...'}</p>
+    )
 
     return (
       <div>
@@ -148,7 +171,7 @@ class Play extends React.Component {
                   <Grid.Column verticalAlign='middle'>
                     {
                       step <= STEP_CHOOSING_SHAPES
-                        ? <p>Opponent is thinking...</p>
+                        ? opponentChoosingOrWaiting
                         : <SelectedShape shape={opponentShape} opponentShape={selectedShape} />
                     }
                   </Grid.Column>
