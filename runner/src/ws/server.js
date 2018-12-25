@@ -3,7 +3,6 @@ const WebSocket = require('ws');
 
 const { PLAYER_ONE_ID, PLAYER_TWO_ID } = require('../config');
 
-let counter = 0;
 const players = [];
 
 const runner = new http.createServer();
@@ -11,6 +10,7 @@ const wss = new WebSocket.Server({
   server: runner,
 });
 
+const MSG_TYPE_PLAYER_AUTH = 'player-auth';
 const MSG_TYPE_OPPONENT_JOINED = 'opponent-joined';
 const MSG_TYPE_OPPONENT_LEFT = 'opponent-left';
 const MSG_TYPE_CHOOSE_SHAPE = 'choose-shape';
@@ -38,12 +38,16 @@ function pairPlayersAsOpponents(player1, player2) {
   player2.opponent = player1;
 }
 
-function handleNewConnection(connection) {
-  connection.id = counter;
-  counter++;
+function handleMessage(connection, data) {
+  const message = JSON.parse(data);
 
-  if (players.length < 2) {
-    players.push(connection);
+  if (message.type === MSG_TYPE_PLAYER_AUTH) {
+    const { playerId } = message;
+
+    if (playerId === PLAYER_ONE_ID || playerId === PLAYER_TWO_ID) {
+      connection.id = playerId;
+      players.push(connection);
+    }
 
     if (players.length === 2) {
       const player1 = players[0];
@@ -55,12 +59,6 @@ function handleNewConnection(connection) {
       sendOpponentJoinedMessage(player2);
     }
   }
-}
-
-function handleMessage(connection, data) {
-  const message = JSON.parse(data);
-
-  // TODO: handle game messages
 }
 
 function handleClosedConnection(connection) {
@@ -77,8 +75,6 @@ function handleClosedConnection(connection) {
 }
 
 wss.on('connection', connection => {
-  handleNewConnection(connection);
-
   connection.on('message', (data) => handleMessage(connection, data));
   connection.on('close', () => handleClosedConnection(connection));
 });

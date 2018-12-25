@@ -17,6 +17,7 @@ const STEP_WAITING_FOR_OPPONENT = 1;
 const STEP_CHOOSING_SHAPES = 2;
 const STEP_DISPLAYING_RESULTS = 3;
 
+const MSG_TYPE_PLAYER_AUTH = 'player-auth';
 const MSG_TYPE_OPPONENT_JOINED = 'opponent-joined';
 const MSG_TYPE_OPPONENT_LEFT = 'opponent-left';
 const MSG_TYPE_CHOOSE_SHAPE = 'choose-shape';
@@ -33,6 +34,8 @@ class Play extends React.Component {
       selectedShape: null,
       opponentShape: null,
     };
+
+    this.sendPlayerAuthMessage = this.sendPlayerAuthMessage.bind(this);
   }
 
   componentDidMount() {
@@ -58,6 +61,7 @@ class Play extends React.Component {
     this.socket.addEventListener('open', () => {
       console.log('Runner socket connection is open.')
       this.setState({ step: STEP_WAITING_FOR_OPPONENT });
+      this.sendPlayerAuthMessage();
     });
 
     this.socket.addEventListener('message', message => this.handleMessage(message.data));
@@ -79,6 +83,15 @@ class Play extends React.Component {
         step: STEP_CHOOSING_SHAPES,
       });
     }
+  }
+
+  sendPlayerAuthMessage() {
+    const message = JSON.stringify({
+      type: MSG_TYPE_PLAYER_AUTH,
+      playerId: this.props.context.playerId,
+    });
+
+    this.socket.send(message);
   }
 
   selectShape = (shape) => {
