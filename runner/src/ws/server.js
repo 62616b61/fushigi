@@ -11,10 +11,21 @@ const wss = new WebSocket.Server({
 
 const MSG_TYPE_OPPONENT_JOINED = 'opponent-joined';
 const MSG_TYPE_OPPONENT_LEFT = 'opponent-left';
+const MSG_TYPE_CHOOSE_SHAPE = 'choose-shape';
+const MSG_TYPE_OPPONENT_CHOSE = 'opponent-chose';
+const MSG_TYPE_RESULTS = 'results';
 
 function sendOpponentJoinedMessage(player) {
   const message = JSON.stringify({
     type: MSG_TYPE_OPPONENT_JOINED,
+  });
+
+  player.send(message);
+}
+
+function sendOpponentLeftMessage(player) {
+  const message = JSON.stringify({
+    type: MSG_TYPE_OPPONENT_LEFT,
   });
 
   player.send(message);
@@ -46,15 +57,20 @@ function handleNewConnection(connection) {
 
 function handleMessage(connection, data) {
   const message = JSON.parse(data);
+
+  // TODO: handle game messages
 }
 
 function handleClosedConnection(connection) {
-  const { id } = connection;
+  const { id, opponent } = connection;
 
   const index = players.findIndex(p => p.id === id);
-
   if (index !== -1) {
     players.splice(index);
+  }
+
+  if (opponent) {
+    sendOpponentLeftMessage(opponent);
   }
 }
 
