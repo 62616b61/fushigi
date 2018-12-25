@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Container, Header, Segment, Divider, Dimmer, Loader } from 'semantic-ui-react';
+import { Grid, Container, Header, Segment, Divider, Dimmer, Loader, Label } from 'semantic-ui-react';
 import { Redirect } from 'react-router-dom';
 
 import ShapeSelector from '../../components/Shapes/ShapeSelector';
@@ -36,6 +36,7 @@ class Play extends React.Component {
       opponentChoseShape: false,
       selectedShape: null,
       opponentShape: null,
+      score: [0, 0],
     };
 
     this.sendPlayerAuthMessage = this.sendPlayerAuthMessage.bind(this);
@@ -97,6 +98,7 @@ class Play extends React.Component {
       this.setState({
         step: STEP_DISPLAYING_RESULTS,
         opponentShape: message.opponentShape,
+        score: message.score,
       });
     }
   }
@@ -148,6 +150,7 @@ class Play extends React.Component {
       opponentChoseShape,
       selectedShape,
       opponentShape,
+      score,
     } = this.state;
 
     const opponentChoosingOrWaiting = (
@@ -168,6 +171,16 @@ class Play extends React.Component {
 
                   <Grid.Column >
                     <Header as='h2'>{ opponentNickname ? opponentNickname : OPPONENT_NICKNAME_PLACEHOLDER }</Header>
+                  </Grid.Column>
+                </Grid>
+
+                <Grid columns={2} padded>
+                  <Grid.Column>
+                    <Label content={score[0]} color='grey' />
+                  </Grid.Column>
+
+                  <Grid.Column >
+                    <Label content={score[1]} color='grey' />
                   </Grid.Column>
                 </Grid>
 

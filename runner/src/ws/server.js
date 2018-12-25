@@ -2,6 +2,7 @@ const http = require('http');
 const WebSocket = require('ws');
 
 const { PLAYER_ONE_ID, PLAYER_TWO_ID } = require('../config');
+const { RULES } = require('../libs/rules');
 
 const players = [];
 
@@ -31,8 +32,16 @@ function checkGameResults() {
 
   // Check if both players have chosen shapes
   if (player1.shape && player2.shape) {
-    sendResults(player1, player2.shape);
-    sendResults(player2, player1.shape);
+    const tie = player1.shape === player2.shape;
+    const player1Wins = RULES[player1.shape] === player2.shape;
+
+    if (!tie) {
+      if (player1Wins) player1.score += 1;
+      else player2.score += 1;
+    }
+
+    sendResults(player1);
+    sendResults(player2);
 
     startNewRound();
   }
@@ -65,9 +74,12 @@ function sendOpponentChoseShape(player) {
 }
 
 function sendResults(player, opponentShape) {
+  const { opponent } = player;
+
   const message = JSON.stringify({
     type: MSG_TYPE_RESULTS,
-    opponentShape,
+    opponentShape: opponent.shape,
+    score: [player.score, opponent.score],
   });
 
   player.send(message);
@@ -124,6 +136,8 @@ function handleClosedConnection(connection) {
 }
 
 wss.on('connection', connection => {
+  connection.score = 0;
+
   connection.on('message', (data) => handleMessage(connection, data));
   connection.on('close', () => handleClosedConnection(connection));
 });
