@@ -33,6 +33,7 @@ class Play extends React.Component {
     this.isActivePage = true;
     this.state = {
       step: STEP_CONNECTING,
+      opponentLeft: false,
       opponentChoseShape: false,
       selectedShape: null,
       opponentShape: null,
@@ -85,6 +86,12 @@ class Play extends React.Component {
     if (message.type === MSG_TYPE_OPPONENT_JOINED) {
       this.setState({
         step: STEP_CHOOSING_SHAPES,
+      });
+    }
+
+    if (message.type === MSG_TYPE_OPPONENT_LEFT) {
+      this.setState({
+        opponentLeft: true,
       });
     }
 
@@ -147,6 +154,7 @@ class Play extends React.Component {
 
     const {
       step,
+      opponentLeft,
       opponentChoseShape,
       selectedShape,
       opponentShape,
@@ -191,32 +199,46 @@ class Play extends React.Component {
                   <Loader>{this.state.step === STEP_CONNECTING ? 'Connecting to the game...' : 'Waiting for opponent...'}</Loader>
                 </Dimmer>
 
-                <Grid style={{height: '300px'}} columns={2} padded>
-                  <Grid.Column verticalAlign='middle'>
-                    {
-                      step <= STEP_CHOOSING_SHAPES
-                        ? <ShapeSelector selectedShape={selectedShape} onClick={this.selectShape} />
-                        : <SelectedShape shape={selectedShape} opponentShape={opponentShape} player />
-                    }
-                  </Grid.Column>
-                  <Grid.Column verticalAlign='middle'>
-                    {
-                      step <= STEP_CHOOSING_SHAPES
-                        ? opponentChoosingOrWaiting
-                        : <SelectedShape shape={opponentShape} opponentShape={selectedShape} />
-                    }
-                  </Grid.Column>
+                <Grid columns={opponentLeft ? 1 : 2} style={{height: '300px'}} verticalAlign='middle'>
+                  {
+                    opponentLeft ? (
+                        <Grid.Column>
+                          <Header as='h3'>Opponent has left the game.</Header>
+                          <BackButton text='Return to main menu' />
+                        </Grid.Column>
+                    ) : (
+                      <React.Fragment>
+                        <Grid.Column>
+                            {
+                              step <= STEP_CHOOSING_SHAPES
+                                ? <ShapeSelector selectedShape={selectedShape} onClick={this.selectShape} />
+                                : <SelectedShape shape={selectedShape} opponentShape={opponentShape} player />
+                            }
+                          </Grid.Column>
+                          <Grid.Column>
+                            {
+                              step <= STEP_CHOOSING_SHAPES
+                                ? opponentChoosingOrWaiting
+                                : <SelectedShape shape={opponentShape} opponentShape={selectedShape} />
+                            }
+                          </Grid.Column>
+                      </React.Fragment>
+                    )
+                  }
                 </Grid>
-
-                <Divider vertical>
-                  <Container textAlign='center' style={{width: '100px'}}>
-                    {
-                      step <= STEP_CHOOSING_SHAPES
-                        ? 'CHOOSE'
-                        : <Countdown seconds={3} onFinish={this.startNewRound} />
-                    }
-                  </Container>
-                </Divider>
+                {
+                  !opponentLeft ? (
+                    <Divider vertical>
+                      <Container textAlign='center' style={{width: '100px'}}>
+                        {
+                          step <= STEP_CHOOSING_SHAPES
+                            ? 'CHOOSE'
+                            : <Countdown seconds={3} onFinish={this.startNewRound} />
+                        }
+                      </Container>
+                    </Divider>
+                  ) : null
+                }
               </Segment>
               <Segment textAlign='left' secondary>
                 <BackButton />
