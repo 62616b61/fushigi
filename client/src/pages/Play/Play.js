@@ -49,14 +49,8 @@ class Play extends React.Component {
 
   componentWillUnmount() {
     this.isActivePage = false;
-    if (!this.socket) return;
 
-    try {
-      this.socket.close();
-      console.log('Runner socket connection has been closed.')
-    } catch (err) {
-      console.log('Error closing socket:', err);
-    }
+    this.disconnectFromRunner();
   }
 
   connectToRunner() {
@@ -79,6 +73,17 @@ class Play extends React.Component {
     });
   }
 
+  disconnectFromRunner() {
+    if (!this.socket) return;
+
+    try {
+      this.socket.close();
+      console.log('Runner socket connection has been closed.')
+    } catch (err) {
+      console.log('Error closing socket:', err);
+    }
+  }
+
   handleMessage(data) {
     const message = JSON.parse(data);
     console.log('Incoming message', message)
@@ -93,6 +98,8 @@ class Play extends React.Component {
       this.setState({
         opponentLeft: true,
       });
+
+      this.disconnectFromRunner();
     }
 
     if (message.type === MSG_TYPE_OPPONENT_CHOSE) {
