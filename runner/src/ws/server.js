@@ -78,8 +78,10 @@ function sendResults(player, opponentShape) {
 
   const message = JSON.stringify({
     type: MSG_TYPE_RESULTS,
-    opponentShape: opponent.shape,
-    score: [player.score, opponent.score],
+    data: {
+      opponentShape: opponent.shape,
+      score: [player.score, opponent.score],
+    },
   });
 
   player.send(message);
@@ -94,7 +96,7 @@ function handleMessage(connection, data) {
   const message = JSON.parse(data);
 
   if (message.type === MSG_TYPE_PLAYER_AUTH) {
-    const { playerId } = message;
+    const { playerId } = message.data;
 
     if (playerId === PLAYER_ONE_ID || playerId === PLAYER_TWO_ID) {
       connection.id = playerId;
@@ -114,7 +116,9 @@ function handleMessage(connection, data) {
 
   if (message.type === MSG_TYPE_CHOOSE_SHAPE) {
     if (!connection.shape) {
-      connection.shape = message.shape;
+      const { shape } = message.data;
+
+      connection.shape = shape;
     }
 
     sendOpponentChoseShape(connection.opponent);

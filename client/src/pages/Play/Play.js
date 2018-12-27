@@ -2,14 +2,13 @@ import React from 'react';
 import { Grid, Container, Header, Segment, Divider, Dimmer, Loader, Label } from 'semantic-ui-react';
 import { Redirect } from 'react-router-dom';
 
+import PlaySocket from '../../ws/PlaySocket';
 import ShapeSelector from '../../components/Shapes/ShapeSelector';
 import SelectedShape from '../../components/Shapes/SelectedShape';
 import BackButton from '../../components/BackButton';
 import Countdown from '../../components/Countdown';
 
 import './Play.css';
-
-const CONNECTION_PERIOD = 1000;
 
 const NICKNAME_PLACEHOLDER = 'You';
 const OPPONENT_NICKNAME_PLACEHOLDER = 'Opponent';
@@ -18,13 +17,6 @@ const STEP_CONNECTING = 0;
 const STEP_WAITING_FOR_OPPONENT = 1;
 const STEP_CHOOSING_SHAPES = 2;
 const STEP_DISPLAYING_RESULTS = 3;
-
-const MSG_TYPE_PLAYER_AUTH = 'player-auth';
-const MSG_TYPE_OPPONENT_JOINED = 'opponent-joined';
-const MSG_TYPE_OPPONENT_LEFT = 'opponent-left';
-const MSG_TYPE_CHOOSE_SHAPE = 'choose-shape';
-const MSG_TYPE_OPPONENT_CHOSE = 'opponent-chose';
-const MSG_TYPE_RESULTS = 'results';
 
 class Play extends React.Component {
   constructor(props) {
@@ -39,108 +31,74 @@ class Play extends React.Component {
       opponentShape: null,
       score: [0, 0],
     };
-
-    this.sendPlayerAuthMessage = this.sendPlayerAuthMessage.bind(this);
   }
 
   componentDidMount() {
-    this.connectToRunner();
-  }
-
-  componentWillUnmount() {
-    this.isActivePage = false;
-
-    this.disconnectFromRunner();
-  }
-
-  connectToRunner() {
-    const { runner } = this.props.context;
-    this.socket = new WebSocket(`ws://192.168.99.100:31380/runner/${runner}`);
-
-    this.socket.addEventListener('open', () => {
+    const onOpen = () => {
       console.log('Runner socket connection is open.')
-      this.setState({ step: STEP_WAITING_FOR_OPPONENT });
-      this.sendPlayerAuthMessage();
-    });
 
-    this.socket.addEventListener('message', message => this.handleMessage(message.data));
+      this.setState({
+        step: STEP_WAITING_FOR_OPPONENT,
+      });
 
-    this.socket.addEventListener('error', () => {
-      console.log('Retrying in', CONNECTION_PERIOD);
-      if (this.isActivePage) {
-        setTimeout(() => this.connectToRunner(), CONNECTION_PERIOD);
-      }
-    });
-  }
+      const { playerId } = this.props.context;
+      this.socket.sendPlayerAuthMessage({
+        playerId,
+      });
+    };
 
-  disconnectFromRunner() {
-    if (!this.socket) return;
-
-    try {
-      this.socket.close();
-      console.log('Runner socket connection has been closed.')
-    } catch (err) {
-      console.log('Error closing socket:', err);
-    }
-  }
-
-  handleMessage(data) {
-    const message = JSON.parse(data);
-    console.log('Incoming message', message)
-
-    if (message.type === MSG_TYPE_OPPONENT_JOINED) {
+    const onOpponentJoined = () => {
       this.setState({
         step: STEP_CHOOSING_SHAPES,
       });
-    }
+    };
 
-    if (message.type === MSG_TYPE_OPPONENT_LEFT) {
+    const onOpponentLeft = () => {
       this.setState({
         opponentLeft: true,
       });
 
-      this.disconnectFromRunner();
-    }
+      this.socket.disconnect();
+    };
 
-    if (message.type === MSG_TYPE_OPPONENT_CHOSE) {
+    const onOpponentChose = () => {
       this.setState({
         opponentChoseShape: true,
       });
-    }
+    };
 
-    if (message.type === MSG_TYPE_RESULTS) {
+    const onResults = (data) => {
       this.setState({
         step: STEP_DISPLAYING_RESULTS,
-        opponentShape: message.opponentShape,
-        score: message.score,
+        opponentShape: data.opponentShape,
+        score: data.score,
       });
-    }
+    };
+
+    const { runner } = this.props.context;
+
+    this.socket = new PlaySocket({
+      runner,
+      onOpen,
+      onOpponentJoined,
+      onOpponentLeft,
+      onOpponentChose,
+      onResults,
+    });
   }
 
-  sendPlayerAuthMessage() {
-    const message = JSON.stringify({
-      type: MSG_TYPE_PLAYER_AUTH,
-      playerId: this.props.context.playerId,
-    });
-
-    this.socket.send(message);
-  }
-
-  sendChooseShapeMessage(shape) {
-    const message = JSON.stringify({
-      type: MSG_TYPE_CHOOSE_SHAPE,
-      shape,
-    });
-
-    this.socket.send(message);
+  componentWillUnmount() {
+    this.socket.disconnect();
   }
 
   selectShape = (shape) => {
     if (!this.state.selectedShape) {
-      this.setState({ selectedShape: shape });
+      this.setState({
+        selectedShape: shape,
+      });
     }
 
-    this.sendChooseShapeMessage(shape);
+    this.socket.sendChooseShapeMessage({ shape });
   };
 
   startNewRound = () => {
