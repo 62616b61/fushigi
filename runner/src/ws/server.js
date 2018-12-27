@@ -1,9 +1,13 @@
 const http = require('http');
 const WebSocket = require('ws');
 
-const { PLAYER_ONE_ID, PLAYER_TWO_ID } = require('../config');
+const { scheduler } = require('../grpc/client');
+const { RUNNER_ID, PLAYER_ONE_ID, PLAYER_TWO_ID } = require('../config');
 const { RULES } = require('../libs/rules');
 
+const SELF_DESTRUCT_TIMEOUT = 60000;
+
+let selfDestructTimeout = null;
 const players = [];
 
 const runner = new http.createServer();
@@ -93,6 +97,7 @@ function pairPlayersAsOpponents(player1, player2) {
 }
 
 function handleMessage(connection, data) {
+  resetSelfDestructTimeout();
   const message = JSON.parse(data);
 
   if (message.type === MSG_TYPE_PLAYER_AUTH) {
@@ -139,11 +144,30 @@ function handleClosedConnection(connection) {
   }
 }
 
+
 wss.on('connection', connection => {
   connection.score = 0;
 
   connection.on('message', (data) => handleMessage(connection, data));
   connection.on('close', () => handleClosedConnection(connection));
 });
+
+
+// Self-destruct if there is no activity
+function setSelfDestructTimeout() {
+  selfDestructTimeout = setTimeout(() => {
+    scheduler.TerminateGameRunner({ runner: RUNNER_ID }, (err, response) => {
+      console.log('Bye!', err, response);
+    });
+  }, SELF_DESTRUCT_TIMEOUT);
+}
+
+function resetSelfDestructTimeout() {
+  clearTimeout(selfDestructTimeout);
+
+  setSelfDestructTimeout();
+}
+
+setSelfDestructTimeout();
 
 module.exports = { runner };
