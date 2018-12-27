@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button, Form, Grid, Header, Segment, Dimmer, Loader } from 'semantic-ui-react';
 import { Redirect } from 'react-router-dom';
-import HubSocket from '../../ws/HubSocket';
 
+import HubSocket from '../../ws/HubSocket';
 import FushigiDefinition from '../../components/FushigiDefinition';
 
 import './Home.css';
