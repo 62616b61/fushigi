@@ -18,7 +18,7 @@ function prepareRunnerDeployment(id, player1, player2) {
   deployment.spec.selector.matchLabels.runner = id;
   deployment.spec.template.metadata.labels.runner = id;
 
-  deployment.spec.template.spec.containers[0].env[0].value = `"${id}"`;
+  deployment.spec.template.spec.containers[0].env[0].value = `${id}`;
   deployment.spec.template.spec.containers[0].env[1].value = player1.id;
   deployment.spec.template.spec.containers[0].env[2].value = player2.id;
 
@@ -45,6 +45,16 @@ function prepareRunnerVirtualService(id) {
   return virtualService;
 }
 
+function setOwnerReferences(manifest, owner) {
+  manifest.metadata.ownerReferences = [{
+    apiVersion: owner.apiVersion,
+    blockOwnerDeletion: true,
+    kind: owner.kind,
+    name: owner.metadata.name,
+    uid: owner.metadata.uid,
+  }];
+}
+
 async function spawnRunner(player1, player2) {
   await client.loadSpec();
 
@@ -54,12 +64,15 @@ async function spawnRunner(player1, player2) {
   const serviceDefinition = prepareRunnerService(id);
   const virtualServiceDefinition = prepareRunnerVirtualService(id);
 
-  const createDeployment = client.apis.apps.v1.namespaces('fushigi').deployments.post({ body: deploymentDefinition });
+  const deployment = await client.apis.apps.v1.namespaces('fushigi').deployments.post({ body: deploymentDefinition });
+
+  setOwnerReferences(serviceDefinition, deployment.body); 
+  setOwnerReferences(virtualServiceDefinition, deployment.body); 
+
   const createService = client.apis.v1.namespaces('fushigi').services.post({ body: serviceDefinition });
   const createVirtualService = client.apis['networking.istio.io'].v1alpha3.namespaces('fushigi').virtualservices.post({ body: virtualServiceDefinition });
 
   await Promise.all([
-    createDeployment,
     createService,
     createVirtualService,
   ]);
@@ -67,6 +80,17 @@ async function spawnRunner(player1, player2) {
   return id;
 }
 
+async function terminateRunner(runner) {
+  await client.loadSpec();
+
+  const deleteDeployment = await client.apis.apps.v1.namespaces('fushigi').deployments.delete({
+    qs: {
+      labelSelector: `run=runner,runner=${runner}`,
+    },
+  });
+}
+
 module.exports = {
   spawnRunner,
+  terminateRunner,
 }

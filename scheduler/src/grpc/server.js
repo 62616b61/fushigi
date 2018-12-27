@@ -1,6 +1,7 @@
 const grpc = require('grpc');
 const protoLoader = require('@grpc/proto-loader');
 const spawnGameRunner = require('./controllers/spawnGameRunner.controller');
+const terminateGameRunner = require('./controllers/terminateGameRunner.controller');
 
 const PROTO_PATH = __dirname + '/proto/scheduler.proto';
 const packageDefinition = protoLoader.loadSync(PROTO_PATH);
@@ -11,6 +12,7 @@ scheduler.addService(
   proto.Scheduler.service,
   {
     SpawnGameRunner: spawnGameRunner,
+    TerminateGameRunner: terminateGameRunner,
   }
 );
 scheduler.bind('0.0.0.0:3000', grpc.ServerCredentials.createInsecure());

@@ -26,7 +26,7 @@ spec:
         name: runner
         imagePullPolicy: IfNotPresent
         env:
-        - name: ID
+        - name: RUNNER_ID
           value: PUT_RUNNER_ID_HERE
 
         - name: PLAYER_ONE_ID
