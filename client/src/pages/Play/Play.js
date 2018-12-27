@@ -34,6 +34,10 @@ class Play extends React.Component {
   }
 
   componentDidMount() {
+    const { runner } = this.props.context;
+
+    if (!runner) return;
+
     const onOpen = () => {
       console.log('Runner socket connection is open.')
 
@@ -75,7 +79,6 @@ class Play extends React.Component {
       });
     };
 
-    const { runner } = this.props.context;
 
     this.socket = new PlaySocket({
       runner,
@@ -88,7 +91,9 @@ class Play extends React.Component {
   }
 
   componentWillUnmount() {
-    this.socket.disconnect();
+    if (this.socket) {
+      this.socket.disconnect();
+    }
   }
 
   selectShape = (shape) => {

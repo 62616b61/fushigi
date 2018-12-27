@@ -17,7 +17,8 @@ class PlaySocket {
     this.onOpponentChose = onOpponentChose;
     this.onResults = onResults;
 
-    this.shouldTryReconnecting = true;
+    this.socket = null;
+    this.reconnectInterval = null;
 
     this.connect();
   }
@@ -26,6 +27,9 @@ class PlaySocket {
     this.socket = new WebSocket(`ws://192.168.99.100:31380/runner/${this.runner}`);
 
     this.socket.addEventListener('open', () => {
+      clearInterval(this.reconnectInterval);
+      this.reconnectInterval = null;
+
       this.onOpen();
     });
 
@@ -33,14 +37,15 @@ class PlaySocket {
 
     this.socket.addEventListener('error', () => {
       console.log('Retrying in', RECONNECT_INTERVAL);
-      if (this.shouldTryReconnecting) {
-        setTimeout(() => this.connect(), RECONNECT_INTERVAL);
+      if (!this.reconnectInterval) {
+        this.reconnectInterval = setInterval(() => this.connect(), RECONNECT_INTERVAL);
       }
     });
   }
 
   disconnect() {
-    this.shouldTryReconnecting = false;
+    clearInterval(this.reconnectInterval);
+    this.reconnectInterval = null;
 
     if (!this.socket) return;
 
