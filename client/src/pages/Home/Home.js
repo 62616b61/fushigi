@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Form, Grid, Header, Segment, Dimmer, Loader } from 'semantic-ui-react';
 import { Redirect } from 'react-router-dom';
+import HubWebsocket from '../../ws/Hub';
 
 import FushigiDefinition from '../../components/FushigiDefinition';
 
@@ -10,11 +11,6 @@ const STEP_IDLE = 0;
 const STEP_LOOKING_FOR_OPPONENT = 1;
 const STEP_CREATING_RUNNER = 2;
 const STEP_READY = 3;
-
-const MSG_TYPE_JOIN = 'join';
-const MSG_TYPE_ASSIGNED_PLAYER_ID = 'assigned-player-id';
-const MSG_TYPE_OPPONENT_FOUND = 'opponent-found';
-const MSG_TYPE_RUNNER_READY = 'runner-ready';
 
 class Home extends React.Component {
   constructor() {
@@ -30,49 +26,35 @@ class Home extends React.Component {
   }
 
   componentDidMount() {
-    this.socket = new WebSocket('ws://192.168.99.100:31380/ws');
+    const onAssignedPlayerId = (data) => {
+      this.props.context.savePlayerId(data.playerId);
+    };
 
-    this.socket.addEventListener('open', () => {
-      console.log('Hub socket connection is open.')
-    });
-
-    this.socket.addEventListener('message', message => this.handleMessage(message.data));
-  }
-
-  componentWillUnmount() {
-    if (!this.socket) return;
-
-    try {
-      this.socket.close();
-      console.log('Hub socket connection has been closed.')
-    } catch (err) {
-      console.log('Error closing socket:', err);
-    }
-  }
-
-  handleMessage(data) {
-    const message = JSON.parse(data);
-    console.log('Incoming message', message)
-
-    if (message.type === MSG_TYPE_ASSIGNED_PLAYER_ID) {
-      this.props.context.savePlayerId(message.playerId);
-    }
-
-    if (message.type === MSG_TYPE_OPPONENT_FOUND) {
-      this.props.context.saveOpponentNickname(message.opponentNickname);
+    const onOpponentFound = (data) => {
+      this.props.context.saveOpponentNickname(data.opponentNickname);
 
       this.setState({
         step: STEP_CREATING_RUNNER,
       });
-    }
+    };
 
-    if (message.type === MSG_TYPE_RUNNER_READY) {
-      this.props.context.saveRunner(message.runner);
+    const onRunnerReady = (data) => {
+      this.props.context.saveRunner(data.runner);
 
       this.setState({
         step: STEP_READY,
       });
-    }
+    };
+
+    this.socket = new HubWebsocket({
+      onAssignedPlayerId,
+      onOpponentFound,
+      onRunnerReady,
+    });
+  }
+
+  componentWillUnmount() {
+    this.socket.disconnect();
   }
 
   handleChange(event) {
@@ -88,12 +70,7 @@ class Home extends React.Component {
       step: STEP_LOOKING_FOR_OPPONENT,
     });
 
-    const joinMessage = JSON.stringify({
-      type: MSG_TYPE_JOIN,
-      nickname: this.state.nickname,
-    });
-
-    this.socket.send(joinMessage);
+    this.socket.sendJoinMessage({ nickname: this.state.nickname });
   }
 
   render() {

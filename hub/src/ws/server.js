@@ -21,7 +21,9 @@ const wss = new WebSocket.Server({
 function sendAssignedPlayerIdMessage(connection) {
   const message = JSON.stringify({
     type: MSG_TYPE_ASSIGNED_PLAYER_ID,
-    playerId: connection.id,
+    data: {
+      playerId: connection.id,
+    },
   });
 
   connection.send(message);
@@ -30,7 +32,9 @@ function sendAssignedPlayerIdMessage(connection) {
 function sendOpponentFoundMessage(connection, opponentNickname) {
   const message = JSON.stringify({
     type: MSG_TYPE_OPPONENT_FOUND,
-    opponentNickname,
+    data: {
+      opponentNickname,
+    },
   });
 
   connection.send(message);
@@ -39,7 +43,9 @@ function sendOpponentFoundMessage(connection, opponentNickname) {
 function sendRunnerReadyMessage(connection, runner) {
   const message = JSON.stringify({
     type: MSG_TYPE_RUNNER_READY,
-    runner,
+    data: {
+      runner,
+    },
   });
 
   connection.send(message);
@@ -49,7 +55,7 @@ function handleMessage(connection, data) {
   const message = JSON.parse(data);
 
   if (message.type === MSG_TYPE_JOIN) {
-    connection.nickname = message.nickname;
+    connection.nickname = message.data.nickname;
 
     queue.push(connection);
   }
