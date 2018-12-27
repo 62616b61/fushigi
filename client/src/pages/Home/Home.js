@@ -20,9 +20,6 @@ class Home extends React.Component {
       nickname: '',
       step: STEP_IDLE,
     };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.sendJoinMessage = this.sendJoinMessage.bind(this);
   }
 
   componentDidMount() {
@@ -57,13 +54,13 @@ class Home extends React.Component {
     this.socket.disconnect();
   }
 
-  handleChange(event) {
+  handleInput = (event) => {
     this.setState({
       nickname: event.target.value,
     });
   }
 
-  sendJoinMessage() {
+  sendJoinMessage = () => {
     this.props.context.saveNickname(this.state.nickname);
 
     this.setState({
@@ -82,16 +79,32 @@ class Home extends React.Component {
             <FushigiDefinition />
             <Segment stacked>
               <Dimmer active={this.state.step !== STEP_IDLE}>
-                <Loader>{this.state.step === STEP_LOOKING_FOR_OPPONENT ? 'Looking for opponent...' : 'Preparing your game...'}</Loader>
+                <Loader>
+                  {
+                    this.state.step === STEP_LOOKING_FOR_OPPONENT
+                      ? 'Looking for opponent...'
+                      : 'Preparing your game...'
+                  }
+                </Loader>
               </Dimmer>
 
               <Form size='large'>
                 <p>Choose your nickname</p>
-                <Form.Input fluid icon='user' iconPosition='left' placeholder='Nickname' value={this.state.nickname} onChange={this.handleChange} />
+                <Form.Input
+                  fluid icon='user'
+                  iconPosition='left'
+                  placeholder='Nickname'
+                  value={this.state.nickname}
+                  onChange={this.handleInput}
+                />
 
-                <Button color='teal' fluid size='large' onClick={this.sendJoinMessage}>
-                  Find opponent
-                </Button>
+                <Button
+                  fluid
+                  content='Find opponent'
+                  color='teal'
+                  size='large'
+                  onClick={this.sendJoinMessage}
+                />
               </Form>
             </Segment>
           </Grid.Column>
