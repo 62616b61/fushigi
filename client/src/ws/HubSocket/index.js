@@ -3,7 +3,7 @@ const MSG_TYPE_ASSIGNED_PLAYER_ID = 'assigned-player-id';
 const MSG_TYPE_OPPONENT_FOUND = 'opponent-found';
 const MSG_TYPE_RUNNER_READY = 'runner-ready';
 
-class HubWebsocket {
+class HubSocket {
   constructor({ onAssignedPlayerId, onOpponentFound, onRunnerReady }) {
     this.onAssignedPlayerId = onAssignedPlayerId;
     this.onOpponentFound = onOpponentFound;
@@ -60,4 +60,4 @@ class HubWebsocket {
   }
 }
 
-export default HubWebsocket;
+export default HubSocket;

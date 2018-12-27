@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Form, Grid, Header, Segment, Dimmer, Loader } from 'semantic-ui-react';
 import { Redirect } from 'react-router-dom';
-import HubWebsocket from '../../ws/Hub';
+import HubSocket from '../../ws/HubSocket';
 
 import FushigiDefinition from '../../components/FushigiDefinition';
 
@@ -43,7 +43,7 @@ class Home extends React.Component {
       });
     };
 
-    this.socket = new HubWebsocket({
+    this.socket = new HubSocket({
       onAssignedPlayerId,
       onOpponentFound,
       onRunnerReady,
