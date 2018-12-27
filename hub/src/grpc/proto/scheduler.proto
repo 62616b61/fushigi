@@ -1,9 +1,12 @@
 syntax = "proto3";
+import "google/protobuf/empty.proto";
 
 package scheduler;
 
 service Scheduler {
   rpc SpawnGameRunner (SpawnGameRunnerRequest) returns (SpawnGameRunnerResponse) {}
+
+  rpc TerminateGameRunner (TerminateGameRunnerRequest) returns (google.protobuf.Empty) {}
 }
 
 message Player {
@@ -16,5 +19,9 @@ message SpawnGameRunnerRequest {
 }
 
 message SpawnGameRunnerResponse {
+  string runner = 1;
+}
+
+message TerminateGameRunnerRequest {
   string runner = 1;
 }
