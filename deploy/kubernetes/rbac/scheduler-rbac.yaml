@@ -15,7 +15,7 @@ metadata:
 rules:
 - apiGroups: ["apps"]
   resources: ["deployments"]
-  verbs: ["create"]
+  verbs: ["list", "create", "deletecollection"]
 - apiGroups: [""]
   resources: ["services"]
   verbs: ["create"]
