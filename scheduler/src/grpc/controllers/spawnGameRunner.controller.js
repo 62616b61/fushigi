@@ -1,4 +1,4 @@
-const { spawnRunner } = require('../../libs/spawner');
+const { spawnRunner } = require('../../libs/kubernetes');
 
 async function spawnGameRunner(call, callback) {
   const { player1, player2 } = call.request;
