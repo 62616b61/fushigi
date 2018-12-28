@@ -79,7 +79,6 @@ class Play extends React.Component {
       });
     };
 
-
     this.socket = new PlaySocket({
       runner,
       onOpen,
