@@ -22,7 +22,6 @@ class Play extends React.Component {
   constructor(props) {
     super(props);
 
-    this.isActivePage = true;
     this.state = {
       step: STEP_CONNECTING,
       opponentLeft: false,
