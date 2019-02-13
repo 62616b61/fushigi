@@ -13,7 +13,7 @@ class HubSocket {
   }
 
   connect() {
-    this.socket = new WebSocket('ws://192.168.99.100:31380/ws');
+    this.socket = new WebSocket(`ws://${window.location.host}/ws`);
 
     this.socket.addEventListener('open', () => {
       console.log('Hub socket connection is open.')

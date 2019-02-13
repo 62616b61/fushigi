@@ -24,7 +24,7 @@ class PlaySocket {
   }
 
   connect() {
-    this.socket = new WebSocket(`ws://192.168.99.100:31380/runner/${this.runner}`);
+    this.socket = new WebSocket(`ws://${window.location.host}/runner/${this.runner}`);
 
     this.socket.addEventListener('open', () => {
       clearInterval(this.reconnectInterval);
