@@ -1,11 +1,11 @@
-import React from 'react'
-import { Route } from 'react-router-dom'
+import React from 'react';
+import { Route } from 'react-router-dom';
 
 import { ContextConsumer } from './context';
-import Home from './pages/Home/Home'
-import Play from './pages/Play/Play'
+import Home from './pages/Home/Home';
+import Play from './pages/Play/Play';
 
-export default function App() {
+const App = () => {
   return (
     <div>
       <Route path="/" exact render={() => 
@@ -21,4 +21,6 @@ export default function App() {
       }/>
     </div>
   );
-}
+};
+
+export default App;
