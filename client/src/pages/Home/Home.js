@@ -25,16 +25,16 @@ function Home ({ context }) {
     name: 'Hub',
     wsUrl: 'ws',
     handlers: {
-      [MSG_TYPE_ASSIGNED_PLAYER_ID]: (data) => {
+      [MSG_TYPE_ASSIGNED_PLAYER_ID]: ({ data }) => {
         context.savePlayerId(data.playerId);
       },
 
-      [MSG_TYPE_OPPONENT_FOUND]: (data) => {
+      [MSG_TYPE_OPPONENT_FOUND]: ({ data }) => {
         context.saveOpponentNickname(data.opponentNickname);
         setStep(STEP_CREATING_RUNNER);
       },
 
-      [MSG_TYPE_RUNNER_READY]: (data) => {
+      [MSG_TYPE_RUNNER_READY]: ({ data }) => {
         context.saveRunner(data.runner);
         setStep(STEP_READY);
       },

@@ -48,7 +48,7 @@ function Play ({context}) {
         setStep(STEP_CHOOSING_SHAPES);
       },
 
-      [ MSG_TYPE_OPPONENT_LEFT ]: () => {
+      [ MSG_TYPE_OPPONENT_LEFT ]: ({ socket }) => {
         setOpponentLeft(true);
         socket.close();
       },
@@ -57,7 +57,7 @@ function Play ({context}) {
         setOpponentChoseShape(true);
       },
 
-      [ MSG_TYPE_RESULTS ]: (data) => {
+      [ MSG_TYPE_RESULTS ]: ({ data }) => {
         setStep(STEP_DISPLAYING_RESULTS);
         setOpponentShape(data.opponentShape);
         setScore(data.score);

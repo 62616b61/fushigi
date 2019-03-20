@@ -10,28 +10,32 @@ export default function useSocket({ name, wsUrl, handlers }) {
   const serverUrl = NODE_ENV === 'development' ? `${REACT_APP_MINIKUBE_IP}:31380` : window.location.host;
   const socketUrl = `ws://${serverUrl}/${wsUrl}`;
 
+  const openHandler = () => {
+    console.log(`${name} socket connection is open.`);
+
+    setIsConnected(true);
+  };
+
+  const closeHandler = () => {
+    console.log(`${name} socket connection is closed.`);
+
+    setIsConnected(false);
+  };
+
+  const errorHandler = () => {
+    console.log(`Retrying ${name} socket connection in 2s`);
+
+    setIsConnected(false);
+    setTimeout(() => setConnectionErrors(connectionErrors + 1), 2000);
+  };
+
   useEffect(() => {
     if (!isConnected) {
       const socket = new WebSocket(socketUrl);
 
-      socket.onopen = () => {
-        console.log(`${name} socket connection is open.`);
-
-        setIsConnected(true);
-      };
-
-      socket.onclose = () => {
-        console.log(`${name} socket connection is closed.`);
-
-        setIsConnected(false);
-      };
-
-      socket.onerror = (error) => {
-        console.log(`Retrying ${name} socket connection in 2s`);
-
-        setIsConnected(false);
-        setTimeout(() => setConnectionErrors(connectionErrors + 1), 2000);
-      };
+      socket.addEventListener('open', openHandler);
+      socket.addEventListener('close', closeHandler);
+      socket.addEventListener('error', errorHandler);
 
       socket.onmessage = (message) => {
         const { data } = message;
@@ -39,12 +43,20 @@ export default function useSocket({ name, wsUrl, handlers }) {
 
         const handler = handlers[parsedData.type];
 
-        handler(parsedData.data);
+        handler({
+          socket,
+          data: parsedData.data,
+        });
       };
 
       setSocket(socket);
 
-      return () => socket.close();
+      return () => {
+        socket.close();
+        socket.removeEventListener('open', openHandler);
+        socket.removeEventListener('close', closeHandler);
+        socket.removeEventListener('error', errorHandler);
+      };
     }
   }, [connectionErrors]);
 
