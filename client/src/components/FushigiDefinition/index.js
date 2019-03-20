@@ -3,7 +3,7 @@ import { Container, Grid } from 'semantic-ui-react';
 
 import './styles.css';
 
-export default () => {
+const FushigiDefinition = () => {
   return (
     <Container className="fushigi">
       <Grid textAlign='left' centered>
@@ -16,5 +16,7 @@ export default () => {
         </Grid.Column>
       </Grid>
     </Container>
-  )
-}
+  );
+};
+
+export default FushigiDefinition;

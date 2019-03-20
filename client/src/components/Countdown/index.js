@@ -1,40 +1,22 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 
-class Countdown extends React.Component {
-  constructor(props) {
-    super(props);
+const Countdown = ({ seconds: secondsToCount, onFinish }) => {
+  const [ seconds, setSeconds ] = useState(secondsToCount);
+  const [ timer, setTimer ] = useState(null);
 
-    const { seconds, onFinish } = props;
-
-    this.countdownInterval = null;
-    this.state = {
-      seconds: seconds > 0 ? seconds : null,
+  useEffect(() => {
+    if (seconds > 0) {
+      setTimer(setTimeout(() => {
+        setSeconds(seconds - 1);
+      }, 1000));
     }
-  }
 
-  componentDidMount() {
-    const { onFinish } = this.props;
+    return () => clearTimeout(timer);
+  }, [seconds]);
 
-    if (this.state.seconds) {
-      this.countdownInterval = setInterval(() => {
-        this.setState({ seconds: this.state.seconds - 1 });
+  if (seconds === 0 && typeof(onFinish) === 'function') onFinish();
 
-        if (this.state.seconds === 0) {
-          clearInterval(this.countdownInterval);
-
-          if (typeof(onFinish) === 'function') onFinish();
-        }
-      }, 1000);
-    }
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.countdownInterval);
-  }
-
-  render() {
-    return String(this.state.seconds);
-  }
-}
+  return seconds;
+};
 
 export default Countdown;
