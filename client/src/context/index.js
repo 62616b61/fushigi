@@ -6,7 +6,6 @@ export function ContextProvider({ children }) {
   const [ playerId, savePlayerId ] = useState(null);
   const [ nickname, saveNickname ] = useState(null);
   const [ opponentNickname, saveOpponentNickname ] = useState(null);
-  const [ runner, saveRunner ] = useState(null);
 
   return (
     <Context.Provider
@@ -14,12 +13,10 @@ export function ContextProvider({ children }) {
         savePlayerId,
         saveNickname,
         saveOpponentNickname,
-        saveRunner,
 
         playerId,
         nickname,
         opponentNickname,
-        runner,
       }}
     >
       {children}

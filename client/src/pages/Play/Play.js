@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Grid, Container, Header, Segment, Divider, Dimmer, Loader, Label } from 'semantic-ui-react';
 import { Redirect } from 'react-router-dom';
 
@@ -25,7 +25,7 @@ const MSG_TYPE_CHOOSE_SHAPE = 'choose-shape';
 const MSG_TYPE_OPPONENT_CHOSE = 'opponent-chose';
 const MSG_TYPE_RESULTS = 'results';
 
-function Play ({context}) {
+function Play ({context, match}) {
   const [ step, setStep ] = useState(STEP_CONNECTING);
   const [ opponentLeft, setOpponentLeft ] = useState(false);
   const [ opponentChoseShape, setOpponentChoseShape ] = useState(false);
@@ -37,8 +37,13 @@ function Play ({context}) {
     nickname,
     playerId,
     opponentNickname,
-    runner,
   } = context;
+
+  const {
+    params: {
+      runner,
+    },
+  } = match;
 
   const [isConnected, socket] = useSocket({
     name: 'Runner',
@@ -64,6 +69,10 @@ function Play ({context}) {
       },
     },
   });
+
+  useEffect(() => {
+    console.log('WOOP')
+  }, [isConnected]);
 
   if (isConnected && step === STEP_CONNECTING) {
     setStep(STEP_WAITING_FOR_OPPONENT);
@@ -104,7 +113,7 @@ function Play ({context}) {
     <div>
       { !runner ? <Redirect to="/" /> : null }
       <Grid textAlign='center' style={{ height: '100%' }} verticalAlign='middle'>
-        <Grid.Column style={{width: '700px'}}>
+        <Grid.Column width={8} style={{minWidth: '700px'}}>
           <Segment.Group stacked>
             <Segment>
               <Grid columns={2} padded>
