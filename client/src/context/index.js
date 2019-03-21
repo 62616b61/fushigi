@@ -1,64 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const Context = React.createContext();
 
-export class ContextProvider extends React.Component {
-  constructor(props) {
-    super(props);
+export function ContextProvider({ children }) {
+  const [ playerId, savePlayerId ] = useState(null);
+  const [ nickname, saveNickname ] = useState(null);
+  const [ opponentNickname, saveOpponentNickname ] = useState(null);
+  const [ runner, saveRunner ] = useState(null);
 
-    this.state = {
-      playerId: null,
-      nickname: null,
-      opponentNickname: null,
-      runner: null,
-    };
-  }
+  return (
+    <Context.Provider
+      value={{
+        savePlayerId,
+        saveNickname,
+        saveOpponentNickname,
+        saveRunner,
 
-  savePlayerId = (id) => {
-    this.setState({
-      playerId: id,
-    });
-  };
-
-  saveNickname = (nickname) => {
-    this.setState({
-      nickname,
-    });
-  };
-
-  saveOpponentNickname = (nickname) => {
-    this.setState({
-      opponentNickname: nickname,
-    });
-  };
-
-  saveRunner = (runner) => {
-    this.setState({
-      runner,
-    });
-  };
-
-  render() {
-    const { children } = this.props;
-
-    return (
-      <Context.Provider
-        value={{
-          savePlayerId: this.savePlayerId,
-          saveNickname: this.saveNickname,
-          saveOpponentNickname: this.saveOpponentNickname,
-          saveRunner: this.saveRunner,
-
-          playerId: this.state.playerId,
-          nickname: this.state.nickname,
-          opponentNickname: this.state.opponentNickname,
-          runner: this.state.runner,
-        }}
-      >
-        {children}
-      </Context.Provider>
-    );
-  }
+        playerId,
+        nickname,
+        opponentNickname,
+        runner,
+      }}
+    >
+      {children}
+    </Context.Provider>
+  );
 }
 
 export const ContextConsumer = Context.Consumer;

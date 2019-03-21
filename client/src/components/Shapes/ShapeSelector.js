@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button }  from 'semantic-ui-react';
 import { ROCK, PAPER, SCISSORS, SHAPE_TO_ICON } from '../../libs/shapes';
-import { RULES } from '../../libs/rules';
 
 const shapes = [ROCK, PAPER, SCISSORS];
 
@@ -23,6 +22,6 @@ const ShapeSelector = ({onClick, selectedShape}) => {
       { buttons }
     </Button.Group>
   );
-}
+};
 
 export default ShapeSelector;

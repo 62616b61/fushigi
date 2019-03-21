@@ -1,6 +1,9 @@
-apiVersion: skaffold/v1beta1
+apiVersion: skaffold/v1beta7
 kind: Config
 build:
+  tagPolicy:
+    envTemplate:
+      template: '{{.IMAGE_NAME}}:latest'
   artifacts:
   - image: kurai/fushigi/hub
     context: ./hub/

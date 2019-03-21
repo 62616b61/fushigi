@@ -1,9 +1,9 @@
-import React from 'react';
-import { Button, Form, Grid, Header, Segment, Dimmer, Loader } from 'semantic-ui-react';
+import React, { useState } from 'react';
+import { Button, Form, Grid, Segment, Dimmer, Loader } from 'semantic-ui-react';
 import { Redirect } from 'react-router-dom';
 
-import HubSocket from '../../ws/HubSocket';
 import FushigiDefinition from '../../components/FushigiDefinition';
+import useSocket from '../../hooks/useSocket';
 
 import './Home.css';
 
@@ -12,106 +12,92 @@ const STEP_LOOKING_FOR_OPPONENT = 1;
 const STEP_CREATING_RUNNER = 2;
 const STEP_READY = 3;
 
-class Home extends React.Component {
-  constructor() {
-    super();
+const MSG_TYPE_JOIN = 'join';
+const MSG_TYPE_ASSIGNED_PLAYER_ID = 'assigned-player-id';
+const MSG_TYPE_OPPONENT_FOUND = 'opponent-found';
+const MSG_TYPE_RUNNER_READY = 'runner-ready';
 
-    this.state = {
-      nickname: '',
-      step: STEP_IDLE,
-    };
-  }
+function Home ({ context }) {
+  const [ nickname, setNickname ] = useState('');
+  const [ step, setStep ] = useState(STEP_IDLE);
 
-  componentDidMount() {
-    const onAssignedPlayerId = (data) => {
-      this.props.context.savePlayerId(data.playerId);
-    };
+  const [isConnected, socket] = useSocket({
+    name: 'Hub',
+    wsUrl: 'ws',
+    handlers: {
+      [MSG_TYPE_ASSIGNED_PLAYER_ID]: ({ data }) => {
+        context.savePlayerId(data.playerId);
+      },
 
-    const onOpponentFound = (data) => {
-      this.props.context.saveOpponentNickname(data.opponentNickname);
+      [MSG_TYPE_OPPONENT_FOUND]: ({ data }) => {
+        context.saveOpponentNickname(data.opponentNickname);
+        setStep(STEP_CREATING_RUNNER);
+      },
 
-      this.setState({
-        step: STEP_CREATING_RUNNER,
-      });
-    };
+      [MSG_TYPE_RUNNER_READY]: ({ data }) => {
+        context.saveRunner(data.runner);
+        setStep(STEP_READY);
+      },
+    },
+  });
 
-    const onRunnerReady = (data) => {
-      this.props.context.saveRunner(data.runner);
+  const sendJoinMessage = () => {
+    context.saveNickname(nickname);
 
-      this.setState({
-        step: STEP_READY,
-      });
-    };
+    setStep(STEP_LOOKING_FOR_OPPONENT)
 
-    this.socket = new HubSocket({
-      onAssignedPlayerId,
-      onOpponentFound,
-      onRunnerReady,
-    });
-  }
-
-  componentWillUnmount() {
-    this.socket.disconnect();
-  }
-
-  handleInput = (event) => {
-    this.setState({
-      nickname: event.target.value,
-    });
-  }
-
-  sendJoinMessage = () => {
-    this.props.context.saveNickname(this.state.nickname);
-
-    this.setState({
-      step: STEP_LOOKING_FOR_OPPONENT,
+    const message = JSON.stringify({
+      type: MSG_TYPE_JOIN,
+      data: { nickname },
     });
 
-    this.socket.sendJoinMessage({ nickname: this.state.nickname });
-  }
+    socket.send(message);
+  };
 
-  render() {
-    return (
-      <div>
-        {this.state.step === STEP_READY ? <Redirect push to="/play" /> : null}
-        <Grid textAlign='center' style={{ height: '100%' }} verticalAlign='middle'>
-          <Grid.Column width={4}>
-            <FushigiDefinition />
-            <Segment stacked>
-              <Dimmer active={this.state.step !== STEP_IDLE}>
-                <Loader>
-                  {
-                    this.state.step === STEP_LOOKING_FOR_OPPONENT
-                      ? 'Looking for opponent...'
-                      : 'Preparing your game...'
-                  }
-                </Loader>
-              </Dimmer>
+  return (
+    <div>
+      {step === STEP_READY ? <Redirect push to="/play" /> : null}
+      <Grid textAlign='center' style={{ height: '100%' }} verticalAlign='middle'>
+        <Grid.Column width={4}>
+          <FushigiDefinition />
+          <Segment stacked>
+            <Dimmer active={!isConnected}>
+              <Loader>Connecting to server...</Loader>
+            </Dimmer>
 
-              <Form size='large'>
-                <p>Choose your nickname</p>
-                <Form.Input
-                  fluid icon='user'
-                  iconPosition='left'
-                  placeholder='Nickname'
-                  value={this.state.nickname}
-                  onChange={this.handleInput}
-                />
+            <Dimmer active={step !== STEP_IDLE}>
+              <Loader>
+                {
+                  step === STEP_LOOKING_FOR_OPPONENT
+                    ? 'Looking for opponent...'
+                    : 'Preparing your game...'
+                }
+              </Loader>
+            </Dimmer>
 
-                <Button
-                  fluid
-                  content='Find opponent'
-                  color='teal'
-                  size='large'
-                  onClick={this.sendJoinMessage}
-                />
-              </Form>
-            </Segment>
-          </Grid.Column>
-        </Grid>
-      </div>
-    );
-  }
+            <Form size='large'>
+              <p>Choose your nickname</p>
+              <Form.Input
+                fluid icon='user'
+                iconPosition='left'
+                placeholder='Nickname'
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+              />
+
+              <Button
+                fluid
+                content='Find opponent'
+                color='teal'
+                size='large'
+                onClick={sendJoinMessage}
+              />
+            </Form>
+          </Segment>
+        </Grid.Column>
+      </Grid>
+    </div>
+  );
 }
 
 export default Home;
