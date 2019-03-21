@@ -1,25 +1,31 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 
-import { ContextConsumer } from './context';
+import { ContextConsumer, ContextProvider } from './context';
 import Home from './pages/Home/Home';
 import Play from './pages/Play/Play';
 
 const App = () => {
   return (
-    <div>
-      <Route path="/" exact render={() => 
+    <ContextProvider>
         <ContextConsumer>
-          { (context) => <Home context={context} /> }
-        </ContextConsumer>
-      }/>
+          { 
+            (context) => <Switch>
+              <Route
+                exact
+                path="/"
+                render={() => <Home context={context} />}
+              />
 
-      <Route path="/play" exact render={() => 
-        <ContextConsumer>
-          { (context) => <Play context={context} /> }
+              <Route
+                path="/play/:runner"
+                exact
+                render={({ match }) => <Play match={match} context={context} />}
+              />
+            </Switch>
+          }
         </ContextConsumer>
-      }/>
-    </div>
+    </ContextProvider>
   );
 };
 

@@ -6,11 +6,15 @@ const { scheduler } = require('../grpc/client');
 const QUEUE_CHECK_PERIOD = 2000;
 
 const MSG_TYPE_JOIN = 'join';
+const MSG_TYPE_CREATE_ROOM = 'create-room';
+
 const MSG_TYPE_ASSIGNED_PLAYER_ID = 'assigned-player-id';
 const MSG_TYPE_OPPONENT_FOUND = 'opponent-found';
 const MSG_TYPE_RUNNER_READY = 'runner-ready';
+const MSG_TYPE_ROOM_READY = 'room-ready';
 
 const queue = [];
+const rooms = {};
 
 const hub = new http.createServer();
 const wss = new WebSocket.Server({
@@ -18,6 +22,9 @@ const wss = new WebSocket.Server({
   clientTracking: true,
 });
 
+/*
+ * FInd Random Opponent
+ */
 function sendAssignedPlayerIdMessage(connection) {
   const message = JSON.stringify({
     type: MSG_TYPE_ASSIGNED_PLAYER_ID,
@@ -51,14 +58,38 @@ function sendRunnerReadyMessage(connection, runner) {
   connection.send(message);
 }
 
+/*
+ * Room Creation
+ */
+function sendRoomReadyMessage(connection, room) {
+  const message = JSON.stringify({
+    type: MSG_TYPE_ROOM_READY,
+    data: {
+      room,
+    },
+  });
+
+  connection.send(message);
+}
+
 function handleMessage(connection, data) {
   const message = JSON.parse(data);
 
-  if (message.type === MSG_TYPE_JOIN) {
-    connection.nickname = message.data.nickname;
+  switch (message.type) {
+    case MSG_TYPE_JOIN:
+      connection.nickname = message.data.nickname;
 
-    queue.push(connection);
-  }
+      queue.push(connection);
+      break;
+
+    case MSG_TYPE_CREATE_ROOM:
+      const room = uuid.generate();
+
+      rooms[room] = true;
+
+      sendRoomReadyMessage(connection, room);
+      break;
+  };
 }
 
 function handleClosedConnection(connection) {
