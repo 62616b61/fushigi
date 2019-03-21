@@ -102,7 +102,7 @@ function Play ({context}) {
 
   return (
     <div>
-      { !runner ? <Redirect to="/play" /> : null }
+      { !runner ? <Redirect to="/" /> : null }
       <Grid textAlign='center' style={{ height: '100%' }} verticalAlign='middle'>
         <Grid.Column style={{width: '700px'}}>
           <Segment.Group stacked>
