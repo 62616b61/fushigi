@@ -10,7 +10,8 @@
     "semantic-ui-react": "^0.84.0"
   },
   "scripts": {
-    "start": "REACT_APP_MINIKUBE_IP=$(minikube ip) react-scripts start",
+    "start": "react-scripts start",
+    "dev": "REACT_APP_HUB_URL=$(minikube ip):31380 REACT_APP_RUNNER_URL=$(minikube ip):31380 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

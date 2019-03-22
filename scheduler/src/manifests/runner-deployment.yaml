@@ -34,3 +34,6 @@ spec:
 
         - name: PLAYER_TWO_ID
           value: PUT_PLAYER_TWO_ID_HERE
+
+        - name: RUNTIME
+          value: kubernetes

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import getRandomInt from '../libs/random';
+const { REACT_APP_RUNTIME } = process.env;
 
 const Context = React.createContext();
 
@@ -16,10 +18,10 @@ export function ContextProvider({ children }) {
         saveOpponentNickname,
         saveRunner,
 
-        playerId,
+        playerId: REACT_APP_RUNTIME === 'docker-compose' ? getRandomInt() : playerId,
         nickname,
         opponentNickname,
-        runner,
+        runner: REACT_APP_RUNTIME === 'docker-compose' ? getRandomInt() : runner,
       }}
     >
       {children}

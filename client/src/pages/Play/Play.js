@@ -40,9 +40,13 @@ function Play ({context}) {
     runner,
   } = context;
 
+  const { REACT_APP_RUNTIME, REACT_APP_RUNNER_URL } = process.env;
+  const serverUrl = REACT_APP_RUNTIME === 'kubernetes' ? window.location.host : REACT_APP_RUNNER_URL;
+  const socketUrl = `ws://${serverUrl}/runner/${runner}`;
+
   const [isConnected, socket] = useSocket({
     name: 'Runner',
-    wsUrl: `runner/${runner}`,
+    url: socketUrl,
     handlers: {
       [ MSG_TYPE_OPPONENT_JOINED ]: () => {
         setStep(STEP_CHOOSING_SHAPES);
@@ -50,6 +54,7 @@ function Play ({context}) {
 
       [ MSG_TYPE_OPPONENT_LEFT ]: ({ socket }) => {
         setOpponentLeft(true);
+
         socket.close();
       },
 
@@ -102,7 +107,7 @@ function Play ({context}) {
 
   return (
     <div>
-      { !runner ? <Redirect to="/play" /> : null }
+      { !runner ? <Redirect to="/" /> : null }
       <Grid textAlign='center' style={{ height: '100%' }} verticalAlign='middle'>
         <Grid.Column style={{width: '700px'}}>
           <Segment.Group stacked>
