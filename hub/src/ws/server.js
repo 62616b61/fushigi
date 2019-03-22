@@ -2,6 +2,7 @@ const uuid = require('short-uuid');
 const http = require('http');
 const WebSocket = require('ws');
 const { scheduler } = require('../grpc/client');
+const { runsInKubernetes } = require('../config');
 
 const QUEUE_CHECK_PERIOD = 2000;
 
@@ -37,6 +38,13 @@ function sendOpponentFoundMessage(connection, opponentNickname) {
     },
   });
 
+  // TODO:
+  // Error: WebSocket is not open: readyState 3 (CLOSED)
+  //     at WebSocket.send (/app/node_modules/ws/lib/websocket.js:322:19)
+  //     at sendOpponentFoundMessage (/app/src/ws/server.js:41:14)
+  //     at Timeout.setInterval [as _onTimeout] (/app/src/ws/server.js:95:5)
+  //     at listOnTimeout (timers.js:327:15)
+  //     at processTimers (timers.js:271:5)
   connection.send(message);
 }
 
@@ -94,13 +102,20 @@ setInterval(() => {
     sendOpponentFoundMessage(player1, player2.nickname);
     sendOpponentFoundMessage(player2, player1.nickname);
 
-    scheduler.SpawnGameRunner({
-      player1: grpcPlayer1,
-      player2: grpcPlayer2,
-    }, (err, response) => {
-      sendRunnerReadyMessage(player1, response.runner);
-      sendRunnerReadyMessage(player2, response.runner);
-    });
+    if (runsInKubernetes) {
+      scheduler.SpawnGameRunner({
+        player1: grpcPlayer1,
+        player2: grpcPlayer2,
+      }, (err, response) => {
+        sendRunnerReadyMessage(player1, response.runner);
+        sendRunnerReadyMessage(player2, response.runner);
+      });
+    } else {
+      const dummyRunner = 'DUMMY DUM DUM RUNNER';
+
+      sendRunnerReadyMessage(player1, dummyRunner);
+      sendRunnerReadyMessage(player2, dummyRunner);
+    }
   }
 }, QUEUE_CHECK_PERIOD);
 

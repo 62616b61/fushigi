@@ -4,8 +4,8 @@ RUN mkdir -p /app
 WORKDIR /app
 
 COPY package.json package-lock.json /app/
-RUN npm install --production
+RUN npm install
 
 COPY . /app
 
-CMD npm start
+CMD npm run dev
