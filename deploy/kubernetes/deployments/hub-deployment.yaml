@@ -21,3 +21,6 @@ spec:
       containers:
       - image: kurai/fushigi/hub
         name: hub
+        env:
+        - name: RUNTIME
+          value: kubernetes
