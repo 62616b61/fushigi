@@ -2,7 +2,12 @@ const http = require('http');
 const WebSocket = require('ws');
 
 const { scheduler } = require('../grpc/client');
-const { RUNNER_ID, PLAYER_ONE_ID, PLAYER_TWO_ID } = require('../config');
+const {
+  RUNNER_ID,
+  PLAYER_ONE_ID,
+  PLAYER_TWO_ID,
+  runsInKubernetes,
+} = require('../config');
 const { RULES } = require('../libs/rules');
 
 const SELF_DESTRUCT_TIMEOUT = 60000;
@@ -22,6 +27,7 @@ const MSG_TYPE_CHOOSE_SHAPE = 'choose-shape';
 const MSG_TYPE_OPPONENT_CHOSE = 'opponent-chose';
 const MSG_TYPE_RESULTS = 'results';
 
+// reset selected shapes
 function startNewRound() {
   const player1 = players[0];
   const player2 = players[1];
@@ -97,17 +103,19 @@ function pairPlayersAsOpponents(player1, player2) {
 }
 
 function handleMessage(connection, data) {
-  resetSelfDestructTimeout();
+  if (runsInKubernetes) resetSelfDestructTimeout();
   const message = JSON.parse(data);
 
   if (message.type === MSG_TYPE_PLAYER_AUTH) {
     const { playerId } = message.data;
 
-    if (playerId === PLAYER_ONE_ID || playerId === PLAYER_TWO_ID) {
+    // Dont check player IDs if runtime is not Kubernetes
+    if (!runsInKubernetes || (playerId === PLAYER_ONE_ID || playerId === PLAYER_TWO_ID)) {
       connection.id = playerId;
       players.push(connection);
     }
 
+    // Start the game if there are two players connected
     if (players.length === 2) {
       const player1 = players[0];
       const player2 = players[1];
@@ -144,14 +152,12 @@ function handleClosedConnection(connection) {
   }
 }
 
-
 wss.on('connection', connection => {
   connection.score = 0;
 
   connection.on('message', (data) => handleMessage(connection, data));
   connection.on('close', () => handleClosedConnection(connection));
 });
-
 
 // Self-destruct if there is no activity
 function setSelfDestructTimeout() {
@@ -168,6 +174,9 @@ function resetSelfDestructTimeout() {
   setSelfDestructTimeout();
 }
 
-setSelfDestructTimeout();
+// Activate self destruct timer only if runtime is Kubernetes
+if (runsInKubernetes) {
+  setSelfDestructTimeout();
+}
 
 module.exports = { runner };
