@@ -1,62 +1,65 @@
 import { useState, useEffect } from 'react';
 
-const { NODE_ENV, REACT_APP_MINIKUBE_IP } = process.env;
 
-export default function useSocket({ name, wsUrl, handlers }) {
+export default function useSocket({ name, url, handlers }) {
   const [ socket, setSocket ] = useState(null);
   const [ isConnected, setIsConnected ] = useState(false);
   const [ connectionErrors, setConnectionErrors ] = useState(0);
 
-  const serverUrl = NODE_ENV === 'development' ? `${REACT_APP_MINIKUBE_IP}:31380` : window.location.host;
-  const socketUrl = `ws://${serverUrl}/${wsUrl}`;
-
-  const openHandler = () => {
-    console.log(`${name} socket connection is open.`);
-
-    setIsConnected(true);
-  };
-
-  const closeHandler = () => {
-    console.log(`${name} socket connection is closed.`);
-
-    setIsConnected(false);
-  };
-
-  const errorHandler = () => {
-    console.log(`Retrying ${name} socket connection in 2s`);
-
-    setIsConnected(false);
-    setTimeout(() => setConnectionErrors(connectionErrors + 1), 2000);
-  };
-
   useEffect(() => {
-    if (!isConnected) {
-      const socket = new WebSocket(socketUrl);
+    try {
+      if (!isConnected) {
+          const socket = new WebSocket(url);
 
-      socket.addEventListener('open', openHandler);
-      socket.addEventListener('close', closeHandler);
-      socket.addEventListener('error', errorHandler);
+          const openHandler = () => {
+            console.log(`${name} socket connection is open.`);
 
-      socket.onmessage = (message) => {
-        const { data } = message;
-        const parsedData = JSON.parse(data);
+            setIsConnected(true);
+          };
 
-        const handler = handlers[parsedData.type];
+          const closeHandler = () => {
+            console.log(`${name} socket connection is closed.`);
 
-        handler({
-          socket,
-          data: parsedData.data,
-        });
-      };
+            setIsConnected(false);
+          };
 
-      setSocket(socket);
+          const errorHandler = () => {
+            console.log(`Retrying ${name} socket connection in 2s`);
 
-      return () => {
-        socket.close();
-        socket.removeEventListener('open', openHandler);
-        socket.removeEventListener('close', closeHandler);
-        socket.removeEventListener('error', errorHandler);
-      };
+            setIsConnected(false);
+            setTimeout(() => setConnectionErrors(connectionErrors + 1), 2000);
+          };
+
+          const messageHandler = (message) => {
+            const { data } = message;
+            const parsedData = JSON.parse(data);
+
+            const handler = handlers[parsedData.type];
+
+            handler({
+              socket,
+              data: parsedData.data,
+            });
+          };
+
+          socket.addEventListener('open', openHandler);
+          socket.addEventListener('close', closeHandler);
+          socket.addEventListener('error', errorHandler);
+          socket.addEventListener('message', messageHandler);
+
+          setSocket(socket);
+
+          return () => {
+            socket.close();
+            socket.removeEventListener('open', openHandler);
+            socket.removeEventListener('close', closeHandler);
+            socket.removeEventListener('error', errorHandler);
+            socket.removeEventListener('message', messageHandler);
+          };
+      }
+    } catch(e) {
+      console.error('Most probably provided REACT_APP_SERVER_URL is invalid.\nEither minikube is stopeed or something unexpected happened.');
+      console.error(e);
     }
   }, [connectionErrors]);
 

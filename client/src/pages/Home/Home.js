@@ -21,9 +21,13 @@ function Home ({ context }) {
   const [ nickname, setNickname ] = useState('');
   const [ step, setStep ] = useState(STEP_IDLE);
 
+  const { REACT_APP_RUNTIME, REACT_APP_HUB_URL } = process.env;
+  const serverUrl = REACT_APP_RUNTIME === 'kubernetes' ? window.location.host : REACT_APP_HUB_URL;
+  const socketUrl = `ws://${serverUrl}/ws`;
+
   const [isConnected, socket] = useSocket({
     name: 'Hub',
-    wsUrl: 'ws',
+    url: socketUrl,
     handlers: {
       [MSG_TYPE_ASSIGNED_PLAYER_ID]: ({ data }) => {
         context.savePlayerId(data.playerId);

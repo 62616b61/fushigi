@@ -1,0 +1,43 @@
+version: '2'
+
+services:
+  hub:
+    tty: true
+    build:
+      context: ./hub
+      dockerfile: Dockerfile
+    volumes:
+      - ./hub:/app
+      - /app/node_modules
+    ports:
+      - "8000:3000"
+    environment:
+      RUNTIME: docker-compose
+
+  runner:
+    tty: true
+    build:
+      context: ./runner
+      dockerfile: Dockerfile
+    volumes:
+      - ./runner:/app
+      - /app/node_modules
+    ports:
+      - "8001:3000"
+    environment:
+      RUNTIME: docker-compose
+
+  client:
+    tty: true
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_HUB_URL=localhost:8000
+      - REACT_APP_RUNNER_URL=localhost:8001
+      - REACT_APP_RUNTIME=docker-compose
