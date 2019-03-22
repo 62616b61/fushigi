@@ -19,6 +19,10 @@ build:
     context: ./client/
     sync:
       '*.js': .
+    docker:
+      dockerfile: Dockerfile.prod
+      buildArgs:
+        REACT_APP_RUNTIME: kubernetes
 
   - image: kurai/fushigi/runner
     context: ./runner/
