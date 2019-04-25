@@ -1,0 +1,53 @@
+const EVENT_ACTION = 'event-action';
+const EVENT_GAME_STATE = 'event-game-state';
+const EVENT_GAME_COUNTDOWN = 'event-game-countdown';
+const EVENT_GAME_STATUS_CHANGED = 'event-game-status-changed';
+const EVENT_PLAYER_AUTHENTICATED = 'event-player-authenticated';
+const EVENT_PLAYER_DISCONNECTED = 'event-player-disconnected';
+const EVENT_PLAYER_CHOSE_SHAPE = 'event-player-chose-shape';
+const EVENT_ROUND_FINISHED = 'event-round-finished';
+const EVENT_GAME_FINISHED = 'event-game-finished';
+
+const GAME_STATUS_IDLE = 'game-idle';
+const GAME_STATUS_WAITING = 'game-waiting';
+const GAME_STATUS_PLAYING = 'game-playing';
+const GAME_STATUS_ROUND_FINISHED = 'game-round-finished';
+const GAME_STATUS_GAME_FINISHED = 'game-game-finished';
+
+const SHAPE_UNKNOWN = 'unknown';
+const SHAPE_ROCK = 'rock';
+const SHAPE_PAPER = 'paper';
+const SHAPE_SCISSORS = 'scissors';
+
+const PLAYER_STATUS_DISCONNECTED = 1;
+const PLAYER_STATUS_CONNECTED = 2;
+const PLAYER_STATUS_PLAYING = 3;
+const PLAYER_STATUS_CHOSE_SHAPE = 4;
+
+module.exports = {
+  EVENT_ACTION,
+  EVENT_GAME_STATE,
+  EVENT_GAME_COUNTDOWN,
+  EVENT_GAME_STATUS_CHANGED,
+  EVENT_PLAYER_AUTHENTICATED,
+  EVENT_PLAYER_DISCONNECTED,
+  EVENT_PLAYER_CHOSE_SHAPE,
+  EVENT_ROUND_FINISHED,
+  EVENT_GAME_FINISHED,
+
+  GAME_STATUS_IDLE,
+  GAME_STATUS_WAITING,
+  GAME_STATUS_PLAYING,
+  GAME_STATUS_ROUND_FINISHED,
+  GAME_STATUS_GAME_FINISHED,
+
+  SHAPE_UNKNOWN,
+  SHAPE_ROCK,
+  SHAPE_PAPER,
+  SHAPE_SCISSORS,
+
+  PLAYER_STATUS_DISCONNECTED,
+  PLAYER_STATUS_CONNECTED,
+  PLAYER_STATUS_PLAYING,
+  PLAYER_STATUS_CHOSE_SHAPE,
+};
