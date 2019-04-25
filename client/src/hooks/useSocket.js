@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 
-export default function useSocket({ name, url, handlers }) {
+export default function useSocket({ name, url, dispatch }) {
   const [ socket, setSocket ] = useState(null);
   const [ isConnected, setIsConnected ] = useState(false);
   const [ connectionErrors, setConnectionErrors ] = useState(0);
@@ -34,12 +34,9 @@ export default function useSocket({ name, url, handlers }) {
             const { data } = message;
             const parsedData = JSON.parse(data);
 
-            const handler = handlers[parsedData.type];
+            console.log('MESSAGE', data)
 
-            handler({
-              socket,
-              data: parsedData.data,
-            });
+            dispatch({ type: parsedData.type, data: parsedData.data });
           };
 
           socket.addEventListener('open', openHandler);
