@@ -4,6 +4,7 @@ const WebSocket = require('ws');
 const { scheduler } = require('../grpc/client');
 const { runsInKubernetes } = require('../config');
 
+const QUEUE_PLAYERS_REQUIRED = 2;
 const QUEUE_CHECK_PERIOD = 2000;
 
 const MSG_TYPE_JOIN = 'join';
@@ -30,12 +31,9 @@ function sendAssignedPlayerIdMessage(connection) {
   connection.send(message);
 }
 
-function sendOpponentFoundMessage(connection, opponentNickname) {
+function sendOpponentFoundMessage(connection) {
   const message = JSON.stringify({
     type: MSG_TYPE_OPPONENT_FOUND,
-    data: {
-      opponentNickname,
-    },
   });
 
   // TODO:
@@ -92,29 +90,23 @@ wss.on('connection', connection => {
 
 // Periodically check the queue and spawn game runner if enough players are present in the queue
 setInterval(() => {
-  if (queue.length >= 2) {
-    const player1 = queue.shift();
-    const player2 = queue.shift();
+  if (queue.length >= QUEUE_PLAYERS_REQUIRED) {
+    const connections = queue.splice(0, QUEUE_PLAYERS_REQUIRED);
+    const players = connections.map(c => { id: c.id });
 
-    const grpcPlayer1 = { id: player1.id };
-    const grpcPlayer2 = { id: player2.id };
-
-    sendOpponentFoundMessage(player1, player2.nickname);
-    sendOpponentFoundMessage(player2, player1.nickname);
+    connections.forEach(connection => sendOpponentFoundMessage(connection));
 
     if (runsInKubernetes) {
       scheduler.SpawnGameRunner({
-        player1: grpcPlayer1,
-        player2: grpcPlayer2,
+        player1: { id: 'f' },
+        player2: { id: 'u' },
       }, (err, response) => {
-        sendRunnerReadyMessage(player1, response.runner);
-        sendRunnerReadyMessage(player2, response.runner);
+        connections.forEach(connection => sendRunnerReadyMessage(connection, response.runner));
       });
     } else {
       const dummyRunner = 'DUMMY DUM DUM RUNNER';
 
-      sendRunnerReadyMessage(player1, dummyRunner);
-      sendRunnerReadyMessage(player2, dummyRunner);
+      connections.forEach(connection => sendRunnerReadyMessage(connection, dummyRunner));
     }
   }
 }, QUEUE_CHECK_PERIOD);
