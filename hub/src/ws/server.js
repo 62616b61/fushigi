@@ -43,7 +43,11 @@ function sendOpponentFoundMessage(connection) {
   //     at Timeout.setInterval [as _onTimeout] (/app/src/ws/server.js:95:5)
   //     at listOnTimeout (timers.js:327:15)
   //     at processTimers (timers.js:271:5)
-  connection.send(message);
+  try {
+    connection.send(message);
+  } catch (e) {
+    console.log('BIG FAT ERROR', e);
+  }
 }
 
 function sendRunnerReadyMessage(connection, runner) {
