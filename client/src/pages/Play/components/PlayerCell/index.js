@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Table, Dimmer, Icon, Loader, Grid, Header, Segment, Label } from 'semantic-ui-react';
+import { Table, Icon, Grid } from 'semantic-ui-react';
 
 import { PlayContext } from '../../context/play';
 import ShapeSelector from '../ShapeSelector';
@@ -148,32 +148,3 @@ export default function PlayerCell({ player }) {
     </Table.Cell>
   );
 }
-
-function OpponentCellOld({ player }) {
-  const { status } = useContext(PlayContext);
-
-  const selectedShape = [GAME_STATUS_ROUND_FINISHED, GAME_STATUS_GAME_FINISHED].includes(status)
-    ? <SelectedShape player={ player } />
-    : null;
-
-  const playerStatus = !selectedShape
-    ? player.lost
-    ? <p>Player lost</p>
-    : <p>{ PLAYER_STATUS_TO_TEXT[player.status] }</p>
-    : null;
-
-          //<Header as='h3'>Nickname: {player.id}</Header>
-          //<Label content={player.score} color='grey' />
-
-  return (
-    <Table.Cell className={ style.cell }>
-      <Grid>
-        <Grid.Column>
-          { playerStatus }
-          { selectedShape }
-        </Grid.Column>
-      </Grid>
-    </Table.Cell>
-  );
-}
-

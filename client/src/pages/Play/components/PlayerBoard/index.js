@@ -1,8 +1,7 @@
 import React, { useContext } from 'react';
-import { Table, Dimmer, Icon, Loader, Grid, Header, Segment, Label } from 'semantic-ui-react';
+import { Table, Dimmer, Loader, Segment } from 'semantic-ui-react';
 
 import { PlayContext } from '../../context/play';
-import { AppContext } from '../../../../context/app';
 import PlayerCell from '../PlayerCell';
 
 const BOARD_WIDTH = 2;
@@ -10,7 +9,6 @@ const BOARD_HEIGHT = 2;
 
 function PlayerBoard() {
   const { isConnected, myself, others } = useContext(PlayContext);
-  const { playerId } = useContext(AppContext);
 
   const playersSorted = [ myself, ...others ];
 

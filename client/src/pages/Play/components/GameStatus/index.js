@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Table, Grid, Header, Segment, Label } from 'semantic-ui-react';
+import { Segment } from 'semantic-ui-react';
 
 import { 
   GAME_STATUS_IDLE,

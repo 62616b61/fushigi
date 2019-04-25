@@ -7,7 +7,6 @@ export const STATUS_CHOSE_SHAPE = 4;
 
 export class Player {
   constructor({ id, score, shape, status, lost }) {
-    console.log('SHAPE', shape)
     this.id = id;
     this.score = score ? score : 0;
     this.shape = shape ? shape : UNKNOWN;

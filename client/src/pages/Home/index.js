@@ -28,8 +28,6 @@ const initialHomeState = {
 function homeReducer (state, action) {
   const { type, data } = action;
 
-  console.log('TPYPEP', type, data)
-
   switch (type) {
     case MSG_TYPE_JOIN: 
       return {

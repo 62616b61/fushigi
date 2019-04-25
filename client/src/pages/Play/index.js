@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Grid, Button, Container, Header, Segment, Divider, Dimmer, Loader, Label } from 'semantic-ui-react';
+import { Grid, Segment } from 'semantic-ui-react';
 import { Redirect } from 'react-router-dom';
 
 import { AppContext } from '../../context/app';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button }  from 'semantic-ui-react';
-import { UNKNOWN, SHAPE_TO_ICON } from '../../libs/shapes';
+import { SHAPE_TO_ICON } from '../../libs/shapes';
 
 const WinButton = ({player, shape}) => {
   return (
@@ -28,8 +28,6 @@ const LoseButton = ({shape}) => {
 
 const SelectedShape = ({player}) => {
   const { lost, shape } = player;
-
-  console.log('SHAPE', shape)
 
   return lost
     ? <LoseButton shape={shape} />
